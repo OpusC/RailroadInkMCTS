@@ -23,7 +23,7 @@ enum TileType {
 	NUM_TILES
 };
 
-enum Rotation { NONE, NINETY, ONE_EIGHTY, TWO_SEVENTY };
+enum Rotation { NONE = 0, NINETY, ONE_EIGHTY, TWO_SEVENTY };
 
 class Tile
 {

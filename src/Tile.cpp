@@ -1,6 +1,13 @@
 #include "Tiles.h"
+#include <cassert>
+#include <cstdint>
+#include <iostream>
+#include <ostream>
 
-uint8_t Tile::rotate4(int rotation, uint8_t bytes) { return bytes; }
+uint8_t Tile::rotate4(int rotation, uint8_t bytes)
+{
+	return static_cast<uint8_t>((bytes >> rotation) | (bytes << (4 - rotation) & 0b1111));
+}
 
 Tile::Tile(TileType tileType, Rotation rotation)
 {
@@ -12,6 +19,7 @@ Tile::Tile(TileType tileType, Rotation rotation)
 	case TileType::CURVED_RAIL:
 		roads = 0b0000;
 		rails = 0b1100;
+		std::cout << "curved rail " << +rails << std::endl;
 		break;
 	case TileType::T_RAIL:
 		roads = 0b0000;
@@ -69,8 +77,16 @@ Tile::Tile(TileType tileType, Rotation rotation)
 		throw std::invalid_argument("received invalid tiletype value");
 	}
 
-	if (rotation % 90 != 0) throw std::invalid_argument("received invalid roation value");
+	switch (rotation) {
+	case NONE:
+	case NINETY:
+	case ONE_EIGHTY:
+	case TWO_SEVENTY:
+		break;
+	default:
+		throw std::invalid_argument("received invalid rotation value");
+	}
 
-	roads = rotate4(rotation / 4, roads);
-	rails = rotate4(rotation / 4, rails);
+	// roads = rotate4(rotation, roads);
+	rails = rotate4(rotation, rails);
 }

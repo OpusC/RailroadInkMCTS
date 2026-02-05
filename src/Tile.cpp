@@ -89,4 +89,5 @@ Tile::Tile(TileType tileType, Rotation rotation)
 
 	// roads = rotate4(rotation, roads);
 	rails = rotate4(rotation, rails);
+	roads = rotate4(rotation, roads);
 }

@@ -2,7 +2,6 @@
 #define TILES_H
 
 #include <cstdint>
-#include <stdexcept>
 
 enum TileType {
 	STRAIGHT_RAIL = 0,
@@ -34,7 +33,10 @@ class Tile
 	static uint8_t rotate4(int rotation, uint8_t bytes);
 
   public:
+	Tile();
 	Tile(TileType tileType, Rotation rotation);
+	Tile(const Tile &tile);
+	Tile(Tile &&tile);
 	uint8_t getRoads() const { return roads; }
 	uint8_t getRails() const { return rails; }
 };

@@ -1,16 +1,16 @@
 #include "Tiles.h"
 #include <cassert>
 #include <cstdint>
-#include <iostream>
-#include <ostream>
 
 uint8_t Tile::rotate4(int rotation, uint8_t bytes)
 {
 	return static_cast<uint8_t>((bytes >> rotation) | (bytes << (4 - rotation) & 0b1111));
 }
 
-Tile::Tile(TileType tileType, Rotation rotation)
+Tile::Tile(TileType tileType, Rotation rotation) noexcept
 {
+	assert(tileType >= 0 && tileType < NUM_TILES);
+
 	switch (tileType) {
 	case TileType::STRAIGHT_RAIL:
 		roads = 0b0000;
@@ -19,7 +19,6 @@ Tile::Tile(TileType tileType, Rotation rotation)
 	case TileType::CURVED_RAIL:
 		roads = 0b0000;
 		rails = 0b1100;
-		std::cout << "curved rail " << +rails << std::endl;
 		break;
 	case TileType::T_RAIL:
 		roads = 0b0000;
@@ -74,9 +73,11 @@ Tile::Tile(TileType tileType, Rotation rotation)
 		rails = 0b0101;
 		break;
 	default:
-		throw std::invalid_argument("received invalid tiletype value");
+		assert(false && "Invalid TileType");
+		break;
 	}
 
+	assert(rotation >= 0 && rotation <= TWO_SEVENTY);
 	switch (rotation) {
 	case NONE:
 	case NINETY:
@@ -84,10 +85,12 @@ Tile::Tile(TileType tileType, Rotation rotation)
 	case TWO_SEVENTY:
 		break;
 	default:
-		throw std::invalid_argument("received invalid rotation value");
+		assert(false && "Invalid Rotation");
 	}
 
 	// roads = rotate4(rotation, roads);
 	rails = rotate4(rotation, rails);
 	roads = rotate4(rotation, roads);
 }
+
+bool Tile::operator==(const Tile &t) const { return (roads == t.roads && rails == t.rails); };

@@ -12,6 +12,10 @@ Tile::Tile(TileType tileType, Rotation rotation) noexcept
 	assert(tileType >= 0 && tileType < NUM_TILES);
 
 	switch (tileType) {
+	case TileType::EMPTY:
+		roads = 0b0000;
+		rails = 0b0000;
+		break;
 	case TileType::STRAIGHT_RAIL:
 		roads = 0b0000;
 		rails = 0b1010;
@@ -77,6 +81,8 @@ Tile::Tile(TileType tileType, Rotation rotation) noexcept
 		break;
 	}
 
+	this->tileType = tileType;
+
 	assert(rotation >= 0 && rotation <= TWO_SEVENTY);
 	switch (rotation) {
 	case NONE:
@@ -93,4 +99,7 @@ Tile::Tile(TileType tileType, Rotation rotation) noexcept
 	roads = rotate4(rotation, roads);
 }
 
-bool Tile::operator==(const Tile &t) const { return (roads == t.roads && rails == t.rails); };
+bool Tile::operator==(const Tile &t) const
+{
+	return (roads == t.roads && rails == t.rails && tileType == t.tileType);
+};

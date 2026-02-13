@@ -24,3 +24,9 @@ TEST(TileTest, TwoSeventyRotation)
 	Tile t = Tile(TileType::CURVED_RAIL, Rotation::TWO_SEVENTY);
 	EXPECT_EQ(0b1001, t.getRails());
 }
+
+TEST(TileTest, GetTileType)
+{
+	Tile t = Tile(TileType::CURVED_RAIL, Rotation::TWO_SEVENTY);
+	EXPECT_EQ(TileType::CURVED_RAIL, t.getTileType());
+}

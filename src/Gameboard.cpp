@@ -15,6 +15,12 @@ Gameboard::Gameboard()
 	}
 }
 
+// TODO: complete this
+bool Gameboard::isConnected(int x, int y) const
+{
+	return true;// stub
+}
+
 bool Gameboard::validateMoves(const std::array<Move, 4> &moves)
 {
 	std::unordered_set<long long> seen;
@@ -41,6 +47,19 @@ bool Gameboard::validateMoves(const std::array<Move, 4> &moves)
 	// Strategy: place the tiles, on each tile call a isConnected() method
 	// if one is not connected, undo all by looping through the moves and
 	// setting all the tiles with x and y coordinates back to TileType::Empty
+	for (Move m : moves) {
+		gameboard[m.y][m.x] = m.tile;// TODO: will this cause problems?
+	}
+
+	bool allTilesConnected = true;
+	for (Move m : moves) {
+		if (!isConnected(m.x, m.y)) { allTilesConnected = false; }
+	}
+	if (!allTilesConnected) {
+		for (Move m : moves) {
+			gameboard[m.y][m.x] = Tile();
+		}
+	}
 
 	return true;
 }

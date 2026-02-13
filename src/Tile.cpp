@@ -7,6 +7,13 @@ uint8_t Tile::rotate4(int rotation, uint8_t bytes)
 	return static_cast<uint8_t>((bytes >> rotation) | (bytes << (4 - rotation) & 0b1111));
 }
 
+Tile::Tile()
+{
+	roads = 0b0000;
+	rails = 0b0000;
+	tileType = TileType::EMPTY;
+}
+
 Tile::Tile(TileType tileType, Rotation rotation) noexcept
 {
 	assert(tileType >= 0 && tileType < NUM_TILES);

@@ -35,7 +35,7 @@ class Tile
 	static uint8_t rotate4(int rotation, uint8_t bytes);
 
   public:
-	Tile() = default;
+	Tile();
 	Tile(TileType tileType, Rotation rotation) noexcept;
 	uint8_t getRoads() const { return roads; }
 	uint8_t getRails() const { return rails; }

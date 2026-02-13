@@ -18,5 +18,6 @@ class Gameboard
 		return gameboard;
 	}
 	bool validateMoves(const std::array<Move, 4> &moves);
+	bool isConnected(int x, int y) const;
 	void applyMoves(const std::array<Move, 4> &moves);
 };

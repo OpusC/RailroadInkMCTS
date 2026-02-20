@@ -37,10 +37,15 @@ class Tile
   public:
 	Tile();
 	Tile(TileType tileType, Rotation rotation) noexcept;
+	Tile(TileType tileType, Rotation rotation, bool isConnectedToExit) noexcept;
+
 	uint8_t getRoads() const { return roads; }
 	uint8_t getRails() const { return rails; }
-	bool operator==(const Tile &t) const;
 	TileType getTileType() const { return tileType; }
+
+	bool operator==(const Tile &t) const;
+
+	bool isConnectedToExit;
 };
 
 #endif

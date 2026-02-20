@@ -12,7 +12,7 @@ Gameboard::Gameboard()
 {
 	for (int x = 0; x < gameboard_size; x++) {
 		for (int y = 0; y < gameboard_size; y++) {
-			gameboard[y][x] = Tile(TileType::EMPTY, Rotation::NONE);
+			gameboard[y][x] = Tile(TileType::EMPTY, Rotation::NONE, false);
 		}
 	}
 }
@@ -21,21 +21,21 @@ Tile Gameboard::getTile(int x, int y) const
 {
 	// --- Exits ---
 	if (y == gameboard_size || y == -1) {
-		if (x == 1 || x == 5) return Tile(TileType::STRAIGHT_ROAD, Rotation::NONE);
-		if (x == 3) return Tile(TileType::STRAIGHT_RAIL, Rotation::NONE);
+		if (x == 1 || x == 5) return Tile(TileType::STRAIGHT_ROAD, Rotation::NONE, true);
+		if (x == 3) return Tile(TileType::STRAIGHT_RAIL, Rotation::NONE, true);
 	}
 
 	if (x == -1 || x == gameboard_size) {
-		if (y == 1 || y == 5) return Tile(TileType::STRAIGHT_RAIL, Rotation::NINETY);
-		if (y == 3) return Tile(TileType::STRAIGHT_ROAD, Rotation::NINETY);
+		if (y == 1 || y == 5) return Tile(TileType::STRAIGHT_RAIL, Rotation::NINETY, true);
+		if (y == 3) return Tile(TileType::STRAIGHT_ROAD, Rotation::NINETY, true);
 	}
 
 	// --- Edge-adjacent but NOT exits -> EMPTY ---
 	if ((y == -1 || y == gameboard_size) && (0 <= x && x < gameboard_size))
-		return Tile(TileType::EMPTY, Rotation::NONE);
+		return Tile(TileType::EMPTY, Rotation::NONE, false);
 
 	if ((x == -1 || x == gameboard_size) && (0 <= y && y < gameboard_size))
-		return Tile(TileType::EMPTY, Rotation::NONE);
+		return Tile(TileType::EMPTY, Rotation::NONE, false);
 
 	// --- Out of bounds and not an exit or adjacent to edge ---
 	assert(x >= 0 && x < gameboard_size);
@@ -50,22 +50,27 @@ const uint8_t down_mask = 0b0010;
 const uint8_t left_mask = 0b0001;
 bool Gameboard::tilesConnect(Tile t1, Tile t2, int direction) const
 {
+	std::cout << "in tileConnect\n";
 	assert(direction >= 0 and direction < 4);
 
 	switch (direction) {
-	case 1: {
+	case 0: {
+		std::cout << "checking up connection\n";
 		return (t1.getRails() & t2.getRails() & up_mask)
 		       || (t1.getRoads() & t2.getRoads() & up_mask);
 	}
-	case 2: {
+	case 1: {
+		std::cout << "checking right connection\n";
 		return (t1.getRails() & t2.getRails() & right_mask)
 		       || (t1.getRoads() & t2.getRoads() & right_mask);
 	}
-	case 3: {
+	case 2: {
+		std::cout << "checking down connection\n";
 		return (t1.getRails() & t2.getRails() & down_mask)
 		       || (t1.getRoads() & t2.getRoads() & down_mask);
 	}
-	case 4: {
+	case 3: {
+		std::cout << "checking left connection\n";
 		return (t1.getRails() & t2.getRails() & left_mask)
 		       || (t1.getRoads() & t2.getRoads() & left_mask);
 	}
@@ -74,83 +79,76 @@ bool Gameboard::tilesConnect(Tile t1, Tile t2, int direction) const
 	return false;
 }
 
-void Gameboard::dfs(Tile tile,
-  int x,
+void Gameboard::dfs(int x,
   int y,
   bool &tileTouchesExit,
-  std::array<std::array<bool, gameboard_size>, gameboard_size> &visited) const
+  std::array<std::array<bool, gameboard_size>, gameboard_size> &visited)
 {
-	if (visited[x][y]) { return; }
+	Tile tile = getTile(x, y);
+
+	if (tile.getTileType() == TileType::EMPTY) { return; }
+
+	std::cout << "Visiting tile at x=" << x << " y=" << y << "\n";
+
+	// Virtual exit tiles
+	if (tile.isConnectedToExit) {
+		std::cout << "tile at x=" << x << " y=" << y << " is an exit!\n";
+		tileTouchesExit = true;
+		return;
+	}
+
+	if (visited[y][x]) {
+		std::cout << "tile has already been visted; returning\n";
+		return;
+	}
 	visited[y][x] = true;
 
-	// TODO: try to prove if this early return is correct
-	if (touchesExit[x][y]) { tileTouchesExit = true; }
 
 	const int dx[] = { 0, 1, 0, -1 };
 	const int dy[] = { -1, 0, 1, 0 };
 
 	for (int i = 0; i < 4; i++) {
+		std::cout << "in for loop iteration " << i << "\n";
 		int nx = x + dx[i];
 		int ny = y + dy[i];
 
-		if (nx >= 0 && nx < gameboard_size && ny >= 0 && ny < gameboard_size) {
-			// continue dfs
-			if (tilesConnect(tile, getTile(nx, ny), i)) {
-				bool newTileTouchesExit;
-				dfs(getTile(nx, ny), nx, ny, newTileTouchesExit, visited);
-				// continue dfs?
+		Tile neighbour = getTile(nx, ny);
+
+		std::cout << "checking nx=" << nx << " ny=" << ny << "\n";
+		if (tilesConnect(tile, neighbour, i)) {
+			dfs(nx, ny, tileTouchesExit, visited);
+			if (tileTouchesExit) {
+				std::cout << "Found an exit! Marking current tile as connected to exit\n";
+				if ((x >= 0 && x < gameboard_size) && (y >= 0 && y < gameboard_size)) {
+					gameboard[y][x].isConnectedToExit = true;
+				}
+				return;
 			}
 		}
 	}
 }
 
-bool Gameboard::isConnected(std::array<Move, 4> moves) const
+bool Gameboard::isConnected(std::array<Move, 4> moves)
 {
+	std::cout << "inside isConnected method\n";
 	// create 7x7 array
-	std::array<std::array<bool, gameboard_size>, gameboard_size> visited;
+	std::array<std::array<bool, gameboard_size>, gameboard_size> visited = {};
 
-	// get an array of all the exits
-	std::array<Tile, 12> exits;
 
 	for (Move m : moves) {
+		std::cout << "\n[DFS] starting dfs for move at x=" << m.x << " y=" << m.y << "\n";
 		if (visited[m.y][m.x]) { continue; }
 
-		bool tileTouchesExit;
-		dfs(m.tile, m.x, m.y, tileTouchesExit, visited);
+		bool tileTouchesExit = false;
+		dfs(m.x, m.y, tileTouchesExit, visited);
 
-		if (!tileTouchesExit) { return false; }
+		if (!tileTouchesExit) {
+			std::cout << "move is false because a tile does not touch the exit\n";
+			return false;
+		}
 	}
 
 	return true;
-
-	/* --- DFS pseudocode ---
-	 *
-	 * 	procedure DFS(G, v) is
-	 * 	    label v as discovered
-	 * 	    for all directed edges from v to w that are in G.adjacentEdges(v) do
-	 * 		if vertex w is not labeled as discovered then
-	 * 		    recursively call DFS(G, w)
-	 */
-
-	/* --- DFS(int x, int y, bool visited[][], &tileTouchesExit, touchesExit[][])
-	 * visited[y][x] = true;
-	 *
-	 * if (touchesExit[y][x]) tileTouchesExit = true;
-	 *
-	 * const dx = {0, 1, 0, -1}
-	 * const dy = {-1, 0, 1, 0}
-	 *
-	 * for dir in range(4):
-	 *	int nx = x + dx[dir];
-	 *	int ny = y + dy[dir];
-	 *	# check nx and ny are in bounds of gameboard
-	 *
-	 *	if ()
-	 *
-	 *
-	 *
-	 *
-	 */
 }
 
 bool Gameboard::validateMoves(const std::array<Move, 4> &moves)
@@ -168,23 +166,29 @@ bool Gameboard::validateMoves(const std::array<Move, 4> &moves)
 		assert(m.x >= 0 && m.x < gameboard_size);
 		assert(m.y >= 0 && m.y < gameboard_size);
 
-		if (gameboard[m.x][m.y].getTileType() != TileType::EMPTY) {
-
+		if (gameboard[m.y][m.x].getTileType() != TileType::EMPTY) {
 			std::cout << "Attempted to place tile on non-empty tile\n";
 			return false;
 		}
 	}
 
-	if (!isConnected(moves)) {
-		return false;
-	} else {
-		return true;
-	}
+	applyMoves(moves);
+	bool valid = isConnected(moves);
+	unapplyMoves(moves);
+
+	return valid;
 }
 
 void Gameboard::applyMoves(const std::array<Move, 4> &moves)
 {
 	for (int i = 0; i < 4; i++) {
 		gameboard[moves[i].y][moves[i].x] = moves[i].tile;
+	}
+}
+
+void Gameboard::unapplyMoves(const std::array<Move, 4> &moves)
+{
+	for (int i = 0; i < 4; i++) {
+		gameboard[moves[i].y][moves[i].x] = Tile();
 	}
 }

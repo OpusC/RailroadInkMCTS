@@ -53,30 +53,38 @@ bool Gameboard::tilesConnect(Tile t1, Tile t2, int direction) const
 	std::cout << "in tileConnect\n";
 	assert(direction >= 0 and direction < 4);
 
+	std::cout << "in tileConnect\n";
+	bool res = false;
+
 	switch (direction) {
 	case 0: {
 		std::cout << "checking up connection\n";
-		return (t1.getRails() & t2.getRails() & up_mask)
-		       || (t1.getRoads() & t2.getRoads() & up_mask);
+		res = (t1.getRails() & up_mask && t2.getRails() & down_mask)
+		      || (t1.getRoads() & up_mask && t2.getRoads() & down_mask);
+		break;
 	}
 	case 1: {
 		std::cout << "checking right connection\n";
-		return (t1.getRails() & t2.getRails() & right_mask)
-		       || (t1.getRoads() & t2.getRoads() & right_mask);
+		res = (t1.getRails() & right_mask && t2.getRails() & left_mask)
+		      || (t1.getRoads() & right_mask && t2.getRoads() & left_mask);
+		break;
 	}
 	case 2: {
 		std::cout << "checking down connection\n";
-		return (t1.getRails() & t2.getRails() & down_mask)
-		       || (t1.getRoads() & t2.getRoads() & down_mask);
+		res = (t1.getRails() & down_mask && t2.getRails() & up_mask)
+		      || (t1.getRoads() & down_mask && t2.getRoads() & up_mask);
+		break;
 	}
 	case 3: {
 		std::cout << "checking left connection\n";
-		return (t1.getRails() & t2.getRails() & left_mask)
-		       || (t1.getRoads() & t2.getRoads() & left_mask);
+		res = (t1.getRails() & left_mask && t2.getRails() & right_mask)
+		      || (t1.getRoads() & left_mask && t2.getRoads() & right_mask);
+		break;
 	}
 	}
 
-	return false;
+	std::cout << "  Tile connected: " << res << "\n";
+	return res;
 }
 
 void Gameboard::dfs(int x,

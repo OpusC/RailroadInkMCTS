@@ -216,11 +216,19 @@ TEST(GameboardTest, GetExitTile)
 {
 	Gameboard g = Gameboard();
 	ASSERT_EQ(Tile(TileType::STRAIGHT_RAIL, Rotation::NINETY), g.getTile(-1, 1));
+	ASSERT_EQ(true, g.getTile(-1, 1).isConnectedToExit);
 
 	ASSERT_EQ(Tile(TileType::STRAIGHT_ROAD, Rotation::NONE), g.getTile(1, -1));
+	ASSERT_EQ(true, g.getTile(1, -1).isConnectedToExit);
 }
 
-TEST(GameboardTest, GetEdgeTile) {}
+TEST(GameboardTest, GetEdgeTile)
+{
+	Gameboard g = Gameboard();
+	ASSERT_EQ(false, g.getTile(-1, 2).isConnectedToExit);
+
+	ASSERT_EQ(false, g.getTile(2, -1).isConnectedToExit);
+}
 
 TEST(BitwiseTest, And)
 {

@@ -31,8 +31,8 @@ class Tile
 	TileType tileType;
 	uint8_t roads;
 	uint8_t rails;
-
 	static uint8_t rotate4(int rotation, uint8_t bytes);
+
 
   public:
 	Tile();

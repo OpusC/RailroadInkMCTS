@@ -7,10 +7,16 @@ TEST(TileTest, NoRotation)
 	EXPECT_EQ(0b1100, t.getRails());
 }
 
-TEST(TileTest, NinetyRotation)
+TEST(TileTest, NinetyRotationCurved)
 {
 	Tile t = Tile(TileType::CURVED_RAIL, Rotation::NINETY);
 	EXPECT_EQ(0b0110, t.getRails());
+}
+
+TEST(TileTest, NinetyRotationStraight)
+{
+	Tile t = Tile(TileType::STRAIGHT_RAIL, Rotation::NINETY);
+	EXPECT_EQ(0b0101, t.getRails());
 }
 
 TEST(TileTest, OneEightyRotation)

@@ -8,8 +8,6 @@ class Gameboard
 {
   public:
 	Gameboard();
-	Gameboard(const Gameboard &gameboard);
-	Gameboard(Gameboard &&gameboard);
 
 	const std::array<std::array<Tile, gameboard_size>, gameboard_size> &getGameboard() const
 	{

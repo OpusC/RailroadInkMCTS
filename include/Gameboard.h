@@ -14,9 +14,9 @@ class Gameboard
 		return gameboard;
 	}
 	Tile getTile(int x, int y) const;
-	bool validateMoves(const std::array<Move, 4> &moves);
-	bool isConnected(std::array<Move, 4>);
-	void applyMoves(const std::array<Move, 4> &moves);
+	bool validateMoves(const std::array<Move, 5> &moves);
+	bool isConnected(std::array<Move, 5>);
+	void applyMoves(const std::array<Move, 5> &moves);
 
   private:
 	bool tilesConnect(Tile t1, Tile t2, int direction) const;
@@ -25,7 +25,7 @@ class Gameboard
 	  bool &tileTouchesExit,
 	  std::array<std::array<bool, gameboard_size>, gameboard_size> &visited);
 
-	void unapplyMoves(const std::array<Move, 4> &moves);
+	void unapplyMoves(const std::array<Move, 5> &moves);
 	std::array<std::array<Tile, gameboard_size>, gameboard_size> gameboard;
 	bool touchesExit[gameboard_size][gameboard_size];
 };

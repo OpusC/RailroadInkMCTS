@@ -136,7 +136,7 @@ void Gameboard::dfs(int x,
 	}
 }
 
-bool Gameboard::isConnected(std::array<Move, 4> moves)
+bool Gameboard::isConnected(std::array<Move, 5> moves)
 {
 	LOG_DEBUG << "inside isConnected method\n";
 	// create 7x7 array
@@ -144,6 +144,7 @@ bool Gameboard::isConnected(std::array<Move, 4> moves)
 
 
 	for (Move m : moves) {
+		if (m.tile.getTileType() == TileType::EMPTY) { continue; }
 		LOG_DEBUG << "\n[DFS] starting dfs for move at x=" << m.x << " y=" << m.y << "\n";
 		if (visited[m.y][m.x]) { continue; }
 
@@ -159,11 +160,12 @@ bool Gameboard::isConnected(std::array<Move, 4> moves)
 	return true;
 }
 
-bool Gameboard::validateMoves(const std::array<Move, 4> &moves)
+bool Gameboard::validateMoves(const std::array<Move, 5> &moves)
 {
 	std::unordered_set<long long> seen;
 
 	for (Move m : moves) {
+		if (m.tile.getTileType() == TileType::EMPTY) { continue; }
 		long long key = (static_cast<long long>(m.x) << 32) | (unsigned int)m.y;
 		if (!seen.insert(key).second) {
 			LOG_DEBUG << "Duplicate move\n";
@@ -187,16 +189,18 @@ bool Gameboard::validateMoves(const std::array<Move, 4> &moves)
 	return valid;
 }
 
-void Gameboard::applyMoves(const std::array<Move, 4> &moves)
+void Gameboard::applyMoves(const std::array<Move, 5> &moves)
 {
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < 5; i++) {
+		if (moves[i].tile.getTileType() == TileType::EMPTY) { continue; }
 		gameboard[moves[i].y][moves[i].x] = moves[i].tile;
 	}
 }
 
-void Gameboard::unapplyMoves(const std::array<Move, 4> &moves)
+void Gameboard::unapplyMoves(const std::array<Move, 5> &moves)
 {
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < 5; i++) {
+		if (moves[i].tile.getTileType() == TileType::EMPTY) { continue; }
 		gameboard[moves[i].y][moves[i].x] = Tile();
 	}
 }

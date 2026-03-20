@@ -25,6 +25,8 @@ enum TileType {
 
 enum Rotation { NONE = 0, NINETY, ONE_EIGHTY, TWO_SEVENTY };
 
+inline bool isSpecialTile(TileType t) { return t >= SPECIAL_1 && t <= SPECIAL_6; }
+
 class Tile
 {
   public:

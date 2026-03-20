@@ -29,8 +29,9 @@ class Game
 	 * including possible uses of the special tile
 	 */
 	std::vector<Move> generateValidMoves(std::array<TileType, 4>);
-	void playMove(std::array<Move, 4>);
+	bool validateMove(const std::array<Move, 5> &moves);
 	void playMove(std::array<Move, 5>);
+	int getSpecialTilesUsed() const;
 
   private:
 	Gameboard gameboard;

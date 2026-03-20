@@ -21,7 +21,7 @@ TEST(GameboardTest, ExitTileConnectionsAreValid)
 {
 	Gameboard g = Gameboard();
 
-	std::array<Move, 4> moves = std::array<Move, 4>();
+	std::array<Move, 5> moves = std::array<Move, 5>();
 
 	Move m0{ Tile(TileType::STRAIGHT_ROAD, Rotation::NINETY), 0, 3 };
 	Move m1{ Tile(TileType::STRAIGHT_ROAD, Rotation::NINETY), 6, 3 };
@@ -46,7 +46,7 @@ TEST(GameboardTest, FailWhenNoTilesTouchExit)
 	Move m2{ Tile(TileType::STRAIGHT_RAIL, Rotation::NONE), 2, 3 };
 	Move m3{ Tile(TileType::STRAIGHT_RAIL, Rotation::NONE), 3, 3 };
 
-	std::array<Move, 4> moves = { m0, m1, m2, m3 };
+	std::array<Move, 5> moves = { m0, m1, m2, m3 };
 
 	bool isMoveValid = g.validateMoves(moves);
 
@@ -57,7 +57,7 @@ TEST(GameboardTest, FailWhenNoTilesTouchExit)
 TEST(GameboardTest, validMovesForCurvedRails)
 {
 	Gameboard g = Gameboard();
-	std::array<Move, 4> moves = std::array<Move, 4>();
+	std::array<Move, 5> moves = std::array<Move, 5>();
 
 	Move m0{ Tile(TileType::STRAIGHT_RAIL, Rotation::NONE), 3, 0 };
 	Move m1{ Tile(TileType::STRAIGHT_RAIL, Rotation::NONE), 3, 1 };
@@ -73,7 +73,7 @@ TEST(GameboardTest, SingleIsolatedTileRestAreValidShouldFail)
 
 	Gameboard g = Gameboard();
 
-	std::array<Move, 4> moves;
+	std::array<Move, 5> moves;
 
 	Move m0{ Tile(TileType::STRAIGHT_RAIL, Rotation::NONE), 3, 3 };
 	Move m1{ Tile(TileType::STRAIGHT_RAIL, Rotation::NONE), 4, 4 };
@@ -90,7 +90,7 @@ TEST(GameboardTest, ValidateMovesUsesBoardState)
 	Gameboard g = Gameboard();
 
 
-	std::array<Move, 4> firstMoves = { Move{ Tile(TileType::STRAIGHT_RAIL, Rotation::NONE), 3, 0 },
+	std::array<Move, 5> firstMoves = { Move{ Tile(TileType::STRAIGHT_RAIL, Rotation::NONE), 3, 0 },
 		Move{ Tile(TileType::STRAIGHT_RAIL, Rotation::NONE), 3, 1 },
 		Move{ Tile(TileType::STRAIGHT_RAIL, Rotation::NONE), 3, 2 },
 		Move{ Tile(TileType::STRAIGHT_RAIL, Rotation::NONE), 3, 3 } };
@@ -98,7 +98,7 @@ TEST(GameboardTest, ValidateMovesUsesBoardState)
 	ASSERT_TRUE(g.validateMoves(firstMoves));
 	g.applyMoves(firstMoves);
 
-	std::array<Move, 4> secondMoves = { Move{ Tile(TileType::STRAIGHT_RAIL, Rotation::NONE), 3, 4 },
+	std::array<Move, 5> secondMoves = { Move{ Tile(TileType::STRAIGHT_RAIL, Rotation::NONE), 3, 4 },
 		Move{ Tile(TileType::CURVED_RAIL, Rotation::NONE), 3, 5 },
 		Move{ Tile(TileType::STRAIGHT_RAIL, Rotation::NINETY), 4, 5 },
 		Move{ Tile(TileType::STRAIGHT_RAIL, Rotation::NINETY), 5, 5 } };
@@ -110,7 +110,7 @@ TEST(GameboardTest, TilesTouchingOtherTilesConnectedToExitAreValid)
 {
 	Gameboard g = Gameboard();
 
-	std::array<Move, 4> moves = std::array<Move, 4>();
+	std::array<Move, 5> moves = std::array<Move, 5>();
 
 	Move m0{ Tile(TileType::STRAIGHT_RAIL, Rotation::NONE), 3, 0 };
 	Move m1{ Tile(TileType::STRAIGHT_RAIL, Rotation::NONE), 3, 1 };
@@ -131,7 +131,7 @@ TEST(GameboardTest, FirstMoveShouldFailIfNotConnectedToExitWithWrongRotation)
 
 	Gameboard g = Gameboard();
 
-	std::array<Move, 4> moves = std::array<Move, 4>();
+	std::array<Move, 5> moves = std::array<Move, 5>();
 
 	Move m0{ Tile(TileType::STRAIGHT_ROAD, Rotation::NONE), 0, 3 };
 	Move m1{ Tile(TileType::STRAIGHT_ROAD, Rotation::NONE), 6, 3 };
@@ -152,7 +152,7 @@ TEST(GameboardTest, FirstMoveShouldFailIfNotConnectedToExit)
 
 	Gameboard g = Gameboard();
 
-	std::array<Move, 4> moves = std::array<Move, 4>();
+	std::array<Move, 5> moves = std::array<Move, 5>();
 
 	Move m0{ Tile(TileType::STRAIGHT_RAIL, Rotation::NONE), 2, 2 };
 	Move m1{ Tile(TileType::STRAIGHT_RAIL, Rotation::NONE), 6, 3 };
@@ -172,7 +172,7 @@ TEST(GameboardTest, MoveShouldNotBeAllowedOnSameTileAsAnotherMove)
 {
 	Gameboard g = Gameboard();
 
-	std::array<Move, 4> moves = std::array<Move, 4>();
+	std::array<Move, 5> moves = std::array<Move, 5>();
 
 	Move m0{ Tile(TileType::STRAIGHT_RAIL, Rotation::NINETY), 0, 3 };
 	Move m1{ Tile(TileType::STRAIGHT_RAIL, Rotation::NONE), 6, 3 };
@@ -192,7 +192,7 @@ TEST(GameboardTest, ExitTileConnectionsArePlacedOnBoard)
 {
 	Gameboard g = Gameboard();
 
-	std::array<Move, 4> moves = std::array<Move, 4>();
+	std::array<Move, 5> moves = std::array<Move, 5>();
 
 	Move m0{ Tile(TileType::STRAIGHT_RAIL, Rotation::NONE), 0, 3 };
 	Move m1{ Tile(TileType::STRAIGHT_RAIL, Rotation::NONE), 6, 3 };

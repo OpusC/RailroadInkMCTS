@@ -1,7 +1,7 @@
+#include "Debug.h"
 #include "Tiles.h"
 #include <cassert>
 #include <cstdint>
-#include <iostream>
 
 uint8_t Tile::rotate4(int rotation, uint8_t bytes)
 {
@@ -205,10 +205,10 @@ Tile::Tile(TileType tileType, Rotation rotation, bool isConnectedToExit) noexcep
 bool Tile::operator==(const Tile &t) const
 {
 	bool a = roads == t.roads;
-	if (a) { std::cout << "roads are equal\n"; }
+	if (a) { LOG_DEBUG << "roads are equal\n"; }
 	bool b = rails == t.rails;
-	if (b) { std::cout << "rails are equal\n"; }
+	if (b) { LOG_DEBUG << "rails are equal\n"; }
 	bool c = tileType == t.tileType;
-	if (c) { std::cout << "tiletype is equal\n"; }
+	if (c) { LOG_DEBUG << "tiletype is equal\n"; }
 	return (roads == t.roads && rails == t.rails && tileType == t.tileType);
 };

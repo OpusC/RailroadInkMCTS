@@ -1,9 +1,9 @@
+#include "Debug.h"
 #include "Gameboard.h"
 #include "Tiles.h"
 #include <array>
 #include <cassert>
 #include <cstdint>
-#include <iostream>
 #include <unordered_set>
 #include <utility>
 
@@ -50,40 +50,40 @@ const uint8_t down_mask = 0b0010;
 const uint8_t left_mask = 0b0001;
 bool Gameboard::tilesConnect(Tile t1, Tile t2, int direction) const
 {
-	std::cout << "in tileConnect\n";
+	LOG_DEBUG << "in tileConnect\n";
 	assert(direction >= 0 and direction < 4);
 
-	std::cout << "in tileConnect\n";
+	LOG_DEBUG << "in tileConnect\n";
 	bool res = false;
 
 	switch (direction) {
 	case 0: {
-		std::cout << "checking up connection\n";
+		LOG_DEBUG << "checking up connection\n";
 		res = (t1.getRails() & up_mask && t2.getRails() & down_mask)
 		      || (t1.getRoads() & up_mask && t2.getRoads() & down_mask);
 		break;
 	}
 	case 1: {
-		std::cout << "checking right connection\n";
+		LOG_DEBUG << "checking right connection\n";
 		res = (t1.getRails() & right_mask && t2.getRails() & left_mask)
 		      || (t1.getRoads() & right_mask && t2.getRoads() & left_mask);
 		break;
 	}
 	case 2: {
-		std::cout << "checking down connection\n";
+		LOG_DEBUG << "checking down connection\n";
 		res = (t1.getRails() & down_mask && t2.getRails() & up_mask)
 		      || (t1.getRoads() & down_mask && t2.getRoads() & up_mask);
 		break;
 	}
 	case 3: {
-		std::cout << "checking left connection\n";
+		LOG_DEBUG << "checking left connection\n";
 		res = (t1.getRails() & left_mask && t2.getRails() & right_mask)
 		      || (t1.getRoads() & left_mask && t2.getRoads() & right_mask);
 		break;
 	}
 	}
 
-	std::cout << "  Tile connected: " << res << "\n";
+	LOG_DEBUG << "  Tile connected: " << res << "\n";
 	return res;
 }
 
@@ -96,17 +96,17 @@ void Gameboard::dfs(int x,
 
 	if (tile.getTileType() == TileType::EMPTY) { return; }
 
-	std::cout << "Visiting tile at x=" << x << " y=" << y << "\n";
+	LOG_DEBUG << "Visiting tile at x=" << x << " y=" << y << "\n";
 
 	// Virtual exit tiles
 	if (tile.isConnectedToExit) {
-		std::cout << "tile at x=" << x << " y=" << y << " is an exit!\n";
+		LOG_DEBUG << "tile at x=" << x << " y=" << y << " is an exit!\n";
 		tileTouchesExit = true;
 		return;
 	}
 
 	if (visited[y][x]) {
-		std::cout << "tile has already been visted; returning\n";
+		LOG_DEBUG << "tile has already been visted; returning\n";
 		return;
 	}
 	visited[y][x] = true;
@@ -116,17 +116,17 @@ void Gameboard::dfs(int x,
 	const int dy[] = { -1, 0, 1, 0 };
 
 	for (int i = 0; i < 4; i++) {
-		std::cout << "in for loop iteration " << i << "\n";
+		LOG_DEBUG << "in for loop iteration " << i << "\n";
 		int nx = x + dx[i];
 		int ny = y + dy[i];
 
 		Tile neighbour = getTile(nx, ny);
 
-		std::cout << "checking nx=" << nx << " ny=" << ny << "\n";
+		LOG_DEBUG << "checking nx=" << nx << " ny=" << ny << "\n";
 		if (tilesConnect(tile, neighbour, i)) {
 			dfs(nx, ny, tileTouchesExit, visited);
 			if (tileTouchesExit) {
-				std::cout << "Found an exit! Marking current tile as connected to exit\n";
+				LOG_DEBUG << "Found an exit! Marking current tile as connected to exit\n";
 				if ((x >= 0 && x < gameboard_size) && (y >= 0 && y < gameboard_size)) {
 					gameboard[y][x].isConnectedToExit = true;
 				}
@@ -138,20 +138,20 @@ void Gameboard::dfs(int x,
 
 bool Gameboard::isConnected(std::array<Move, 4> moves)
 {
-	std::cout << "inside isConnected method\n";
+	LOG_DEBUG << "inside isConnected method\n";
 	// create 7x7 array
 	std::array<std::array<bool, gameboard_size>, gameboard_size> visited = {};
 
 
 	for (Move m : moves) {
-		std::cout << "\n[DFS] starting dfs for move at x=" << m.x << " y=" << m.y << "\n";
+		LOG_DEBUG << "\n[DFS] starting dfs for move at x=" << m.x << " y=" << m.y << "\n";
 		if (visited[m.y][m.x]) { continue; }
 
 		bool tileTouchesExit = false;
 		dfs(m.x, m.y, tileTouchesExit, visited);
 
 		if (!tileTouchesExit) {
-			std::cout << "move is false because a tile does not touch the exit\n";
+			LOG_DEBUG << "move is false because a tile does not touch the exit\n";
 			return false;
 		}
 	}
@@ -166,7 +166,7 @@ bool Gameboard::validateMoves(const std::array<Move, 4> &moves)
 	for (Move m : moves) {
 		long long key = (static_cast<long long>(m.x) << 32) | (unsigned int)m.y;
 		if (!seen.insert(key).second) {
-			std::cout << "Duplicate move\n";
+			LOG_DEBUG << "Duplicate move\n";
 			return false;
 		}
 
@@ -175,7 +175,7 @@ bool Gameboard::validateMoves(const std::array<Move, 4> &moves)
 		assert(m.y >= 0 && m.y < gameboard_size);
 
 		if (gameboard[m.y][m.x].getTileType() != TileType::EMPTY) {
-			std::cout << "Attempted to place tile on non-empty tile\n";
+			LOG_DEBUG << "Attempted to place tile on non-empty tile\n";
 			return false;
 		}
 	}

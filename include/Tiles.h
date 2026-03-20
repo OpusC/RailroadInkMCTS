@@ -27,11 +27,13 @@ enum Rotation { NONE = 0, NINETY, ONE_EIGHTY, TWO_SEVENTY };
 
 class Tile
 {
+  public:
+	static uint8_t rotate4(int rotation, uint8_t bytes);
+
   private:
 	TileType tileType;
 	uint8_t roads;
 	uint8_t rails;
-	static uint8_t rotate4(int rotation, uint8_t bytes);
 
 
   public:

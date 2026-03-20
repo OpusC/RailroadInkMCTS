@@ -5,7 +5,7 @@
 
 uint8_t Tile::rotate4(int rotation, uint8_t bytes)
 {
-	return static_cast<uint8_t>((bytes >> rotation) | (bytes << (4 - rotation) & 0b1111));
+	return static_cast<uint8_t>(((bytes >> rotation) | (bytes << (4 - rotation))) & 0b1111);
 }
 
 Tile::Tile()

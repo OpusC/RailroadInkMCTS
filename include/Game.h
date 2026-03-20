@@ -1,6 +1,7 @@
 #include "Gameboard.h"
 #include "Tiles.h"
 #include <array>
+#include <random>
 #include <vector>
 
 class Game
@@ -8,6 +9,7 @@ class Game
 
   public:
 	Game();
+	explicit Game(uint32_t seed);
 	Game(const Game &game);
 	Game(Game &&game);
 	/*
@@ -34,4 +36,5 @@ class Game
 	Gameboard gameboard;
 	int turn;
 	std::array<bool, 6> specialTileUsed;
+	std::mt19937 rng;
 };

@@ -94,7 +94,7 @@ Tile::Tile(TileType tileType, Rotation rotation) noexcept
 
 	assert(rotation >= 0 && rotation <= TWO_SEVENTY);
 	switch (rotation) {
-	case NONE:
+	case ZERO:
 	case NINETY:
 	case ONE_EIGHTY:
 	case TWO_SEVENTY:
@@ -187,7 +187,7 @@ Tile::Tile(TileType tileType, Rotation rotation, bool isConnectedToExit) noexcep
 
 	assert(rotation >= 0 && rotation <= TWO_SEVENTY);
 	switch (rotation) {
-	case NONE:
+	case ZERO:
 	case NINETY:
 	case ONE_EIGHTY:
 	case TWO_SEVENTY:

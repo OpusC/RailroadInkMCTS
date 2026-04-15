@@ -12,7 +12,7 @@ Gameboard::Gameboard()
 {
 	for (int x = 0; x < gameboard_size; x++) {
 		for (int y = 0; y < gameboard_size; y++) {
-			gameboard[y][x] = Tile(TileType::EMPTY, Rotation::NONE, false);
+			gameboard[y][x] = Tile(TileType::EMPTY, Rotation::ZERO, false);
 		}
 	}
 }
@@ -21,8 +21,8 @@ Tile Gameboard::getTile(int x, int y) const
 {
 	// --- Exits ---
 	if (y == gameboard_size || y == -1) {
-		if (x == 1 || x == 5) return Tile(TileType::STRAIGHT_ROAD, Rotation::NONE, true);
-		if (x == 3) return Tile(TileType::STRAIGHT_RAIL, Rotation::NONE, true);
+		if (x == 1 || x == 5) return Tile(TileType::STRAIGHT_ROAD, Rotation::ZERO, true);
+		if (x == 3) return Tile(TileType::STRAIGHT_RAIL, Rotation::ZERO, true);
 	}
 
 	if (x == -1 || x == gameboard_size) {
@@ -32,10 +32,10 @@ Tile Gameboard::getTile(int x, int y) const
 
 	// --- Edge-adjacent but NOT exits -> EMPTY ---
 	if ((y == -1 || y == gameboard_size) && (0 <= x && x < gameboard_size))
-		return Tile(TileType::EMPTY, Rotation::NONE, false);
+		return Tile(TileType::EMPTY, Rotation::ZERO, false);
 
 	if ((x == -1 || x == gameboard_size) && (0 <= y && y < gameboard_size))
-		return Tile(TileType::EMPTY, Rotation::NONE, false);
+		return Tile(TileType::EMPTY, Rotation::ZERO, false);
 
 	// --- Out of bounds and not an exit or adjacent to edge ---
 	assert(x >= 0 && x < gameboard_size);

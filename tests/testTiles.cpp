@@ -3,7 +3,7 @@
 
 TEST(TileTest, NoRotation)
 {
-	Tile t = Tile(TileType::CURVED_RAIL, Rotation::NONE);
+	Tile t = Tile(TileType::CURVED_RAIL, Rotation::ZERO);
 	EXPECT_EQ(0b1100, t.getRails());
 }
 

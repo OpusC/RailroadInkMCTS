@@ -1,0 +1,53 @@
+name: Test Coverage
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtest-dev lcov
+          sudo cmake /usr/src/googletest -B /tmp/gtest-build
+          sudo cmake --build /tmp/gtest-build
+          sudo cmake --install /tmp/gtest-build
+
+      - name: Build and run tests with coverage
+        run: make coverage
+
+      - name: Check coverage threshold
+        run: |
+          COVERAGE=$(lcov --summary build/coverage/coverage.info 2>&1 \
+            | grep "lines" \
+            | grep -oP '\d+\.\d+(?=%)' \
+            | head -1)
+          echo "Line coverage: ${COVERAGE}%"
+          THRESHOLD=80
+          if (( $(echo "$COVERAGE < $THRESHOLD" | bc -l) )); then
+            echo "Coverage ${COVERAGE}% is below the required threshold of ${THRESHOLD}%"
+            exit 1
+          fi
+          echo "Coverage ${COVERAGE}% meets the required threshold of ${THRESHOLD}%"
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: build/coverage/html/
+          retention-days: 30
+
+      - name: Upload coverage to Coveralls
+        if: github.event_name == 'push'
+        uses: coverallsapp/github-action@v2
+        with:
+          file: build/coverage/coverage.info
+          format: lcov

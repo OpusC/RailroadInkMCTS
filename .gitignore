@@ -1,7 +1,6 @@
 # Build artifacts
 build/
 compile_commands.json
-Makefile
 
 # Tooling / editor
 .cache/

@@ -2,43 +2,43 @@
 #define TILES_H
 
 #include <array>
+#include <cstdint>
 
 enum TileType {
-	EMPTY = 0,
-	STRAIGHT_RAIL,
-	CURVED_RAIL,
-	T_RAIL,
-	STRAIGHT_ROAD,
-	CURVED_ROAD,
-	T_ROAD,
-	ROAD_TO_RAIL,
-	CURVED_ROAD_TO_RAIL,
-	ROAD_RAIL_UNDERPASS,
-	SPECIAL_1,
-	SPECIAL_2,
-	SPECIAL_3,
-	SPECIAL_4,
-	SPECIAL_5,
-	SPECIAL_6,
-	NUM_TILES
+	Empty = 0,
+	StraightRail,
+	CurvedRail,
+	TRail,
+	StraightRoad,
+	CurvedRoad,
+	TRoad,
+	RoadToRail,
+	CurvedRoadToRail,
+	RoadRailUnderpass,
+	Special1,
+	Special2,
+	Special3,
+	Special4,
+	Special5,
+	Special6,
+	NumTiles
 };
 
-enum Rotation { ZERO = 0, NINETY, ONE_EIGHTY, TWO_SEVENTY };
+enum Rotation { Zero = 0, Ninety, OneEighty, TwoSeventy };
 
-enum ConnectionType { NONE = 0, ROAD, RAIL };
+enum ConnectionType { None = 0, Road, Rail };
 
-enum Direction { UP = 0, RIGHT, DOWN, LEFT };
+enum Direction { Up = 0, Right, Down, Left };
 
-inline bool isSpecialTile(TileType t)
-{
-	return t >= SPECIAL_1 && t <= SPECIAL_6;
-}
+inline bool isSpecialTile(TileType t) { return t >= Special1 && t <= Special6; }
 
 class Tile
 {
   private:
 	TileType tileType;
 	std::array<ConnectionType, 4> connections;
+	uint8_t roads;
+	uint8_t rails;
 
   public:
 	Tile();
@@ -49,6 +49,8 @@ class Tile
 	void rotate();
 	bool connects(Direction direction, ConnectionType connectionType) const;
 	TileType getTileType() const { return tileType; }
+	uint8_t getRoads() const { return roads; }
+	uint8_t getRails() const { return rails; }
 
 	bool operator==(const Tile &t) const;
 

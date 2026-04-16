@@ -3,53 +3,38 @@
 
 TEST(TileTest, NoRotation)
 {
-	Tile t = Tile(TileType::CURVED_RAIL, Rotation::ZERO);
-	EXPECT_TRUE(t.connects(Direction::UP, ConnectionType::RAIL));
-	EXPECT_TRUE(t.connects(Direction::RIGHT, ConnectionType::RAIL));
-	EXPECT_FALSE(t.connects(Direction::DOWN, ConnectionType::RAIL));
-	EXPECT_FALSE(t.connects(Direction::LEFT, ConnectionType::RAIL));
+	Tile t = Tile(TileType::CurvedRail, Rotation::Zero);
+	EXPECT_EQ(0b1100, t.getRails());
 }
 
 TEST(TileTest, NinetyRotationCurved)
 {
-	Tile t = Tile(TileType::CURVED_RAIL, Rotation::NINETY);
-	EXPECT_FALSE(t.connects(Direction::UP, ConnectionType::RAIL));
-	EXPECT_TRUE(t.connects(Direction::RIGHT, ConnectionType::RAIL));
-	EXPECT_TRUE(t.connects(Direction::DOWN, ConnectionType::RAIL));
-	EXPECT_FALSE(t.connects(Direction::LEFT, ConnectionType::RAIL));
+	Tile t = Tile(TileType::CurvedRail, Rotation::Ninety);
+	EXPECT_EQ(0b0110, t.getRails());
 }
 
 TEST(TileTest, NinetyRotationStraight)
 {
-	Tile t = Tile(TileType::STRAIGHT_RAIL, Rotation::NINETY);
-	EXPECT_FALSE(t.connects(Direction::UP, ConnectionType::RAIL));
-	EXPECT_TRUE(t.connects(Direction::RIGHT, ConnectionType::RAIL));
-	EXPECT_FALSE(t.connects(Direction::DOWN, ConnectionType::RAIL));
-	EXPECT_TRUE(t.connects(Direction::LEFT, ConnectionType::RAIL));
+	Tile t = Tile(TileType::StraightRail, Rotation::Ninety);
+	EXPECT_EQ(0b0101, t.getRails());
 }
 
 TEST(TileTest, OneEightyRotation)
 {
-	Tile t = Tile(TileType::CURVED_RAIL, Rotation::ONE_EIGHTY);
-	EXPECT_FALSE(t.connects(Direction::UP, ConnectionType::RAIL));
-	EXPECT_FALSE(t.connects(Direction::RIGHT, ConnectionType::RAIL));
-	EXPECT_TRUE(t.connects(Direction::DOWN, ConnectionType::RAIL));
-	EXPECT_TRUE(t.connects(Direction::LEFT, ConnectionType::RAIL));
+	Tile t = Tile(TileType::CurvedRail, Rotation::OneEighty);
+	EXPECT_EQ(0b0011, t.getRails());
 }
 
 TEST(TileTest, TwoSeventyRotation)
 {
-	Tile t = Tile(TileType::CURVED_RAIL, Rotation::TWO_SEVENTY);
-	EXPECT_TRUE(t.connects(Direction::UP, ConnectionType::RAIL));
-	EXPECT_FALSE(t.connects(Direction::RIGHT, ConnectionType::RAIL));
-	EXPECT_FALSE(t.connects(Direction::DOWN, ConnectionType::RAIL));
-	EXPECT_TRUE(t.connects(Direction::LEFT, ConnectionType::RAIL));
+	Tile t = Tile(TileType::CurvedRail, Rotation::TwoSeventy);
+	EXPECT_EQ(0b1001, t.getRails());
 }
 
 TEST(TileTest, GetTileType)
 {
-	Tile t = Tile(TileType::CURVED_RAIL, Rotation::TWO_SEVENTY);
-	EXPECT_EQ(TileType::CURVED_RAIL, t.getTileType());
+	Tile t = Tile(TileType::CurvedRail, Rotation::TwoSeventy);
+	EXPECT_EQ(TileType::CurvedRail, t.getTileType());
 }
 
 TEST(TileTest, DefaultConstructorNotConnectedToExit)
@@ -60,23 +45,23 @@ TEST(TileTest, DefaultConstructorNotConnectedToExit)
 
 TEST(TileTest, TileTypeConstructorNotConnectedToExit)
 {
-	Tile t = Tile(TileType::CURVED_RAIL);
+	Tile t = Tile(TileType::CurvedRail);
 	EXPECT_EQ(false, t.isConnectedToExit);
 }
 
 
 TEST(TileTest, TileTypeAndRotationConstructorNotConnectedToExit)
 {
-	Tile t = Tile(TileType::CURVED_RAIL, Rotation::TWO_SEVENTY);
+	Tile t = Tile(TileType::CurvedRail, Rotation::TwoSeventy);
 	EXPECT_EQ(false, t.isConnectedToExit);
 }
 
 TEST(TileTest, AllParamConstructorSetsIsConnectedToExit)
 {
 
-	Tile t0 = Tile(TileType::CURVED_RAIL, Rotation::TWO_SEVENTY, false);
+	Tile t0 = Tile(TileType::CurvedRail, Rotation::TwoSeventy, false);
 	EXPECT_EQ(false, t0.isConnectedToExit);
 
-	Tile t1 = Tile(TileType::CURVED_RAIL, Rotation::TWO_SEVENTY, true);
+	Tile t1 = Tile(TileType::CurvedRail, Rotation::TwoSeventy, true);
 	EXPECT_EQ(true, t1.isConnectedToExit);
 }

@@ -2,14 +2,14 @@
 #include "Tiles.h"
 #include <array>
 
-const int gameboard_size = 7;
+const int gameboardSize = 7;
 
 class Gameboard
 {
   public:
 	Gameboard();
 
-	const std::array<std::array<Tile, gameboard_size>, gameboard_size> &getGameboard() const
+	const std::array<std::array<Tile, gameboardSize>, gameboardSize> &getGameboard() const
 	{
 		return gameboard;
 	}
@@ -23,9 +23,9 @@ class Gameboard
 	void dfs(int x,
 	  int y,
 	  bool &tileTouchesExit,
-	  std::array<std::array<bool, gameboard_size>, gameboard_size> &visited);
+	  std::array<std::array<bool, gameboardSize>, gameboardSize> &visited);
 
 	void unapplyMoves(const std::array<Move, 5> &moves);
-	std::array<std::array<Tile, gameboard_size>, gameboard_size> gameboard;
-	bool touchesExit[gameboard_size][gameboard_size];
+	std::array<std::array<Tile, gameboardSize>, gameboardSize> gameboard;
+	bool touchesExit[gameboardSize][gameboardSize];
 };

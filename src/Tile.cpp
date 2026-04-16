@@ -1,22 +1,56 @@
 #include "Debug.h"
 #include "Tiles.h"
 #include <cassert>
-#include <cstdint>
 
-uint8_t Tile::rotate4(int rotation, uint8_t bytes)
-{
-	return static_cast<uint8_t>(((bytes >> rotation) | (bytes << (4 - rotation))) & 0b1111);
-}
+// TODO: STUB
+void Tile::rotate() {}
 
 Tile::Tile()
 {
-	roads = 0b0000;
-	rails = 0b0000;
+	connections = { ConnectionType::NONE,
+		ConnectionType::NONE,
+		ConnectionType::NONE,
+		ConnectionType::NONE };
 	tileType = TileType::EMPTY;
 	isConnectedToExit = false;
 }
 
-Tile::Tile(TileType tileType, Rotation rotation) noexcept
+Tile::Tile(TileType tileType)
+{
+	assert(tileType >= 0 && tileType < NUM_TILES);
+
+	struct TileData
+	{
+		std::array<ConnectionType, 4> connections;
+		bool isStation;
+	};
+
+	static constexpr std::array<TileData, NUM_TILES> tileData = { {
+	  { { NONE, NONE, NONE, NONE }, false },// EMPTY
+	  { { RAIL, NONE, RAIL, NONE }, false },// STRAIGHT_RAIL
+	  { { RAIL, RAIL, NONE, NONE }, false },// CURVED_RAIL
+	  { { RAIL, RAIL, NONE, RAIL }, false },// T_RAIL
+	  { { ROAD, NONE, ROAD, NONE }, false },// STRAIGHT_ROAD
+	  { { ROAD, ROAD, NONE, NONE }, false },// CURVED_ROAD
+	  { { ROAD, ROAD, NONE, ROAD }, false },// T_ROAD
+	  { { ROAD, NONE, RAIL, NONE }, true },// ROAD_TO_RAIL
+	  { { ROAD, RAIL, NONE, NONE }, true },// CURVED_ROAD_TO_RAIL
+	  { { ROAD, RAIL, ROAD, RAIL }, false },// ROAD_RAIL_UNDERPASS
+	  { { ROAD, ROAD, RAIL, ROAD }, true },// SPECIAL_1
+	  { { ROAD, RAIL, RAIL, RAIL }, true },// SPECIAL_2
+	  { { ROAD, ROAD, ROAD, ROAD }, false },// SPECIAL_3
+	  { { RAIL, RAIL, RAIL, RAIL }, false },// SPECIAL_4
+	  { { ROAD, RAIL, RAIL, ROAD }, true },// SPECIAL_5
+	  { { ROAD, RAIL, ROAD, RAIL }, true },// SPECIAL_6
+	} };
+
+	this->tileType = tileType;
+	connections = tileData[tileType].connections;
+	isStation = tileData[tileType].isStation;
+	isConnectedToExit = false;
+}
+
+Tile::Tile(TileType tileType, Rotation rotation)
 {
 	assert(tileType >= 0 && tileType < NUM_TILES);
 
@@ -109,7 +143,9 @@ Tile::Tile(TileType tileType, Rotation rotation) noexcept
 	this->isConnectedToExit = false;
 }
 
-Tile::Tile(TileType tileType, Rotation rotation, bool isConnectedToExit) noexcept
+Tile::Tile(TileType tileType,
+  Rotation rotation,
+  bool isConnectedToExit) noexcept
 {
 	assert(tileType >= 0 && tileType < NUM_TILES);
 

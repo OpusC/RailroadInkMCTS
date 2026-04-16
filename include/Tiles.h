@@ -2,7 +2,6 @@
 #define TILES_H
 
 #include <array>
-#include <cstdint>
 
 enum TileType {
 	Empty = 0,
@@ -28,34 +27,43 @@ enum Rotation { Zero = 0, Ninety, OneEighty, TwoSeventy };
 
 enum ConnectionType { None = 0, Road, Rail };
 
-enum Direction { Up = 0, Right, Down, Left };
+enum Direction { Up = 0, Right, Down, Left, NumDirections };
 
 inline bool isSpecialTile(TileType t) { return t >= Special1 && t <= Special6; }
 
 class Tile
 {
   private:
-	TileType tileType;
-	std::array<ConnectionType, 4> connections;
-	uint8_t roads;
-	uint8_t rails;
+	TileType tileType{ Empty };
+	std::array<ConnectionType, NumDirections> connections{ None,
+		None,
+		None,
+		None };
 
   public:
-	Tile();
+	Tile() = default;
 	Tile(TileType tileType);
 	Tile(TileType tileType, Rotation rotation);
 	Tile(TileType tileType, Rotation rotation, bool isConnectedToExit);
 
+	/*
+	 * Checks if the tile, when placed beside eachother, will connect.
+	 * ConnectionDirection is relative to t1
+	 */
+	static bool
+	  connects(const Tile &t1, const Tile &t2, Direction connectionDirection);
+
 	void rotate();
-	bool connects(Direction direction, ConnectionType connectionType) const;
 	TileType getTileType() const { return tileType; }
-	uint8_t getRoads() const { return roads; }
-	uint8_t getRails() const { return rails; }
+	const std::array<ConnectionType, NumDirections> &getConnections() const
+	{
+		return connections;
+	}
 
 	bool operator==(const Tile &t) const;
 
-	bool isConnectedToExit;
-	bool isStation;
+	bool isConnectedToExit{ false };
+	bool isStation{ false };
 };
 
 #endif

@@ -9,7 +9,8 @@ class Gameboard
   public:
 	Gameboard();
 
-	const std::array<std::array<Tile, gameboardSize>, gameboardSize> &getGameboard() const
+	const std::array<std::array<Tile, gameboardSize>, gameboardSize> &
+	  getGameboard() const
 	{
 		return gameboard;
 	}
@@ -20,11 +21,6 @@ class Gameboard
 
   private:
 	bool tilesConnect(Tile t1, Tile t2, int direction) const;
-	void dfs(int x,
-	  int y,
-	  bool &tileTouchesExit,
-	  std::array<std::array<bool, gameboardSize>, gameboardSize> &visited);
-
 	void unapplyMoves(const std::array<Move, 5> &moves);
 	std::array<std::array<Tile, gameboardSize>, gameboardSize> gameboard;
 	bool touchesExit[gameboardSize][gameboardSize];

@@ -1,4 +1,6 @@
 # Finish connectionType boolean refactor
+rotate4 -> rotate
+
 
 # Allow arbitrary exits on construction
 - We need an exit Struct
@@ -10,7 +12,6 @@ struct Exit {
     connectionType: ConnectionType // Can re-use connection type, but assert it is only road or rail
 }
 ```
-
 
 - Exit cells use straight road/rail tiles. The outward edge points into a border cell and is ignored by BFS traversal.
 - Constructor should take in a list of Exit structs to place the exits on initialization.

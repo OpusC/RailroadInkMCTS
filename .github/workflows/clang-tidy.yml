@@ -1,0 +1,29 @@
+name: Clang-Tidy
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  clang-tidy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang-tidy bear libgtest-dev
+          sudo cmake /usr/src/googletest -B /tmp/gtest-build
+          sudo cmake --build /tmp/gtest-build
+          sudo cmake --install /tmp/gtest-build
+
+      - name: Generate compile_commands.json
+        run: bear -- make test
+
+      - name: Run clang-tidy
+        run: |
+          clang-tidy src/*.cpp tests/*.cpp -- -std=c++17 -Iinclude

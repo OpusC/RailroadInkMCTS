@@ -4,28 +4,28 @@
 #include <cstdint>
 
 enum TileType {
-	EMPTY = 0,
-	STRAIGHT_RAIL,
-	CURVED_RAIL,
-	T_RAIL,
-	STRAIGHT_ROAD,
-	CURVED_ROAD,
-	T_ROAD,
-	ROAD_TO_RAIL,
-	CURVED_ROAD_TO_RAIL,
-	ROAD_RAIL_UNDERPASS,
-	SPECIAL_1,
-	SPECIAL_2,
-	SPECIAL_3,
-	SPECIAL_4,
-	SPECIAL_5,
-	SPECIAL_6,
-	NUM_TILES
+	Empty = 0,
+	StraightRail,
+	CurvedRail,
+	TRail,
+	StraightRoad,
+	CurvedRoad,
+	TRoad,
+	RoadToRail,
+	CurvedRoadToRail,
+	RoadRailUnderpass,
+	Special1,
+	Special2,
+	Special3,
+	Special4,
+	Special5,
+	Special6,
+	NumTiles
 };
 
-enum Rotation { ZERO = 0, NINETY, ONE_EIGHTY, TWO_SEVENTY };
+enum Rotation { Zero = 0, Ninety, OneEighty, TwoSeventy };
 
-inline bool isSpecialTile(TileType t) { return t >= SPECIAL_1 && t <= SPECIAL_6; }
+inline bool isSpecialTile(TileType t) { return t >= Special1 && t <= Special6; }
 
 class Tile
 {

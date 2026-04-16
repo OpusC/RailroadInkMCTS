@@ -12,76 +12,76 @@ Tile::Tile()
 {
 	roads = 0b0000;
 	rails = 0b0000;
-	tileType = TileType::EMPTY;
+	tileType = TileType::Empty;
 	isConnectedToExit = false;
 }
 
 Tile::Tile(TileType tileType, Rotation rotation) noexcept
 {
-	assert(tileType >= 0 && tileType < NUM_TILES);
+	assert(tileType >= 0 && tileType < NumTiles);
 
 	switch (tileType) {
-	case TileType::EMPTY:
+	case TileType::Empty:
 		roads = 0b0000;
 		rails = 0b0000;
 		break;
-	case TileType::STRAIGHT_RAIL:
+	case TileType::StraightRail:
 		roads = 0b0000;
 		rails = 0b1010;
 		break;
-	case TileType::CURVED_RAIL:
+	case TileType::CurvedRail:
 		roads = 0b0000;
 		rails = 0b1100;
 		break;
-	case TileType::T_RAIL:
+	case TileType::TRail:
 		roads = 0b0000;
 		rails = 0b1101;
 		break;
-	case TileType::STRAIGHT_ROAD:
+	case TileType::StraightRoad:
 		roads = 0b1010;
 		rails = 0b0000;
 		break;
-	case TileType::CURVED_ROAD:
+	case TileType::CurvedRoad:
 		roads = 0b1100;
 		rails = 0b0000;
 		break;
-	case TileType::T_ROAD:
+	case TileType::TRoad:
 		roads = 0b1101;
 		rails = 0b0000;
 		break;
-	case TileType::ROAD_TO_RAIL:
+	case TileType::RoadToRail:
 		roads = 0b1000;
 		rails = 0b0010;
 		break;
-	case TileType::CURVED_ROAD_TO_RAIL:
+	case TileType::CurvedRoadToRail:
 		roads = 0b1000;
 		rails = 0b0100;
 		break;
-	case TileType::ROAD_RAIL_UNDERPASS:
+	case TileType::RoadRailUnderpass:
 		roads = 0b1010;
 		rails = 0b0101;
 		break;
-	case TileType::SPECIAL_1:
+	case TileType::Special1:
 		roads = 0b1101;
 		rails = 0b0010;
 		break;
-	case TileType::SPECIAL_2:
+	case TileType::Special2:
 		roads = 0b1000;
 		rails = 0b0111;
 		break;
-	case TileType::SPECIAL_3:
+	case TileType::Special3:
 		roads = 0b1111;
 		rails = 0b0000;
 		break;
-	case TileType::SPECIAL_4:
+	case TileType::Special4:
 		roads = 0b0000;
 		rails = 0b1111;
 		break;
-	case TileType::SPECIAL_5:
+	case TileType::Special5:
 		roads = 0b1001;
 		rails = 0b0110;
 		break;
-	case TileType::SPECIAL_6:
+	case TileType::Special6:
 		roads = 0b1010;
 		rails = 0b0101;
 		break;
@@ -92,12 +92,12 @@ Tile::Tile(TileType tileType, Rotation rotation) noexcept
 
 	this->tileType = tileType;
 
-	assert(rotation >= 0 && rotation <= TWO_SEVENTY);
+	assert(rotation >= 0 && rotation <= TwoSeventy);
 	switch (rotation) {
-	case ZERO:
-	case NINETY:
-	case ONE_EIGHTY:
-	case TWO_SEVENTY:
+	case Zero:
+	case Ninety:
+	case OneEighty:
+	case TwoSeventy:
 		break;
 	default:
 		assert(false && "Invalid Rotation");
@@ -111,70 +111,70 @@ Tile::Tile(TileType tileType, Rotation rotation) noexcept
 
 Tile::Tile(TileType tileType, Rotation rotation, bool isConnectedToExit) noexcept
 {
-	assert(tileType >= 0 && tileType < NUM_TILES);
+	assert(tileType >= 0 && tileType < NumTiles);
 
 	switch (tileType) {
-	case TileType::EMPTY:
+	case TileType::Empty:
 		roads = 0b0000;
 		rails = 0b0000;
 		break;
-	case TileType::STRAIGHT_RAIL:
+	case TileType::StraightRail:
 		roads = 0b0000;
 		rails = 0b1010;
 		break;
-	case TileType::CURVED_RAIL:
+	case TileType::CurvedRail:
 		roads = 0b0000;
 		rails = 0b1100;
 		break;
-	case TileType::T_RAIL:
+	case TileType::TRail:
 		roads = 0b0000;
 		rails = 0b1101;
 		break;
-	case TileType::STRAIGHT_ROAD:
+	case TileType::StraightRoad:
 		roads = 0b1010;
 		rails = 0b0000;
 		break;
-	case TileType::CURVED_ROAD:
+	case TileType::CurvedRoad:
 		roads = 0b1100;
 		rails = 0b0000;
 		break;
-	case TileType::T_ROAD:
+	case TileType::TRoad:
 		roads = 0b1101;
 		rails = 0b0000;
 		break;
-	case TileType::ROAD_TO_RAIL:
+	case TileType::RoadToRail:
 		roads = 0b1000;
 		rails = 0b0010;
 		break;
-	case TileType::CURVED_ROAD_TO_RAIL:
+	case TileType::CurvedRoadToRail:
 		roads = 0b1000;
 		rails = 0b0100;
 		break;
-	case TileType::ROAD_RAIL_UNDERPASS:
+	case TileType::RoadRailUnderpass:
 		roads = 0b1010;
 		rails = 0b0101;
 		break;
-	case TileType::SPECIAL_1:
+	case TileType::Special1:
 		roads = 0b1101;
 		rails = 0b0010;
 		break;
-	case TileType::SPECIAL_2:
+	case TileType::Special2:
 		roads = 0b1000;
 		rails = 0b0111;
 		break;
-	case TileType::SPECIAL_3:
+	case TileType::Special3:
 		roads = 0b1111;
 		rails = 0b0000;
 		break;
-	case TileType::SPECIAL_4:
+	case TileType::Special4:
 		roads = 0b0000;
 		rails = 0b1111;
 		break;
-	case TileType::SPECIAL_5:
+	case TileType::Special5:
 		roads = 0b1001;
 		rails = 0b0110;
 		break;
-	case TileType::SPECIAL_6:
+	case TileType::Special6:
 		roads = 0b1010;
 		rails = 0b0101;
 		break;
@@ -185,12 +185,12 @@ Tile::Tile(TileType tileType, Rotation rotation, bool isConnectedToExit) noexcep
 
 	this->tileType = tileType;
 
-	assert(rotation >= 0 && rotation <= TWO_SEVENTY);
+	assert(rotation >= 0 && rotation <= TwoSeventy);
 	switch (rotation) {
-	case ZERO:
-	case NINETY:
-	case ONE_EIGHTY:
-	case TWO_SEVENTY:
+	case Zero:
+	case Ninety:
+	case OneEighty:
+	case TwoSeventy:
 		break;
 	default:
 		assert(false && "Invalid Rotation");

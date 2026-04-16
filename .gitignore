@@ -6,4 +6,3 @@ Makefile
 # Tooling / editor
 .cache/
 .clangd
-.clang-format

@@ -3,16 +3,25 @@
 #include "Tiles.h"
 #include <array>
 #include <cassert>
-#include <cstdint>
 #include <unordered_set>
 #include <utility>
 
 
-Gameboard::Gameboard()
+Gameboard::Gameboard(int size)
 {
-	for (int x = 0; x < gameboardSize; x++) {
-		for (int y = 0; y < gameboardSize; y++) {
-			gameboard[y][x] = Tile(TileType::Empty, Rotation::Zero, false);
+	int totalSize = size + 2;
+
+	using TT = TileType;
+
+	for (int row = 0; row < totalSize; row++) {
+		for (int col = 0; col < totalSize; col++) {
+
+			if (row == 0 || row == totalSize - 1 || col == 0
+			    || col == totalSize - 1) {
+				gameboard[row][col] = Tile(TT::Border);
+			} else {
+				gameboard[row][col] = Tile(TT::Empty);
+			}
 		}
 	}
 }

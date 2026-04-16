@@ -20,7 +20,8 @@ enum TileType {
 	Special4,
 	Special5,
 	Special6,
-	NumTiles
+	Border,
+	NumTiles,
 };
 
 enum Rotation { Zero = 0, Ninety, OneEighty, TwoSeventy };

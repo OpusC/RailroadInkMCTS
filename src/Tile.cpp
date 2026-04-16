@@ -25,6 +25,8 @@ bool Tile::connects(const Tile &t1,
 
 Tile::Tile(TileType tileType)
 {
+	if (tileType == TileType::Border) { this. }
+
 	assert(tileType >= 0 && tileType < NumTiles);
 
 	struct TileData
@@ -51,6 +53,7 @@ Tile::Tile(TileType tileType)
 	  { { CT::Rail, CT::Rail, CT::Rail, CT::Rail }, false },
 	  { { CT::Road, CT::Rail, CT::Rail, CT::Road }, true },
 	  { { CT::Road, CT::Rail, CT::Road, CT::Rail }, true },
+	  { { CT::None, CT::None, CT::None, CT::None }, true },
 	} };
 
 	this->tileType = tileType;

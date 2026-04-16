@@ -1,16 +1,14 @@
 #include "Move.h"
 #include "Tiles.h"
 #include <array>
-
-const int gameboardSize = 7;
+#include <vector>
 
 class Gameboard
 {
   public:
-	Gameboard();
+	explicit Gameboard(int size);
 
-	const std::array<std::array<Tile, gameboardSize>, gameboardSize> &
-	  getGameboard() const
+	const std::vector<std::vector<Tile>> &getGameboard() const
 	{
 		return gameboard;
 	}
@@ -22,6 +20,5 @@ class Gameboard
   private:
 	bool tilesConnect(Tile t1, Tile t2, int direction) const;
 	void unapplyMoves(const std::array<Move, 5> &moves);
-	std::array<std::array<Tile, gameboardSize>, gameboardSize> gameboard;
-	bool touchesExit[gameboardSize][gameboardSize];
+	std::vector<std::vector<Tile>> gameboard;
 };

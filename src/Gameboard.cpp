@@ -1,14 +1,20 @@
 #include "Gameboard.h"
+#include "BoardExit.h"
 #include "Debug.h"
+#include "TileEnums.h"
 #include "Tiles.h"
 #include <array>
 #include <cassert>
+#include <set>
 #include <unordered_set>
 #include <utility>
+#include <vector>
 
 
-Gameboard::Gameboard(int size)
+Gameboard::Gameboard(int size, std::vector<BoardExit> exits)
+  : size(size), gameboard(size + 2, std::vector<Tile>(size + 2))
 {
+	this->size = size;
 	int totalSize = size + 2;
 
 	using TT = TileType;
@@ -24,42 +30,56 @@ Gameboard::Gameboard(int size)
 			}
 		}
 	}
+
+	for (int i = 0; i < exits.size(); i++) {
+		for (int j = i + 1; j < exits.size(); j++) {
+			assert(exits[i].boardX != exits[j].boardX
+			       || exits[i].boardY != exits[j].boardY);
+		}
+	}
+
+	for (BoardExit exit : exits) {
+		int directions[4][2] = { { 0, -1 }, { 1, 0 }, { 0, 1 }, { -1, 0 } };
+		auto x = exit.boardX + directions[exit.exitDirection][0];
+		auto y = exit.boardY + directions[exit.exitDirection][1];
+
+		TileType exitTileType;
+		if (exit.connectionType == ConnectionType::Rail) {
+			exitTileType = TileType::StraightRail;
+		} else {
+			exitTileType = TileType::StraightRoad;
+		}
+
+		Tile exitTile = Tile(exitTileType);
+
+
+		if (exit.exitDirection % 2 != 0) { exitTile.rotate(); }
+
+		gameboard[y + 1][x + 1] = exitTile;
+	}
 }
 
-Tile Gameboard::getTile(int x, int y) const
+void Gameboard::setTile(int x, int y, Tile tile)
 {
-	// --- Exits ---
-	if (y == gameboardSize || y == -1) {
-		if (x == 1 || x == 5)
-			return Tile(TileType::StraightRoad, Rotation::Zero, true);
-		if (x == 3) return Tile(TileType::StraightRail, Rotation::Zero, true);
-	}
-
-	if (x == -1 || x == gameboardSize) {
-		if (y == 1 || y == 5)
-			return Tile(TileType::StraightRail, Rotation::Ninety, true);
-		if (y == 3) return Tile(TileType::StraightRoad, Rotation::Ninety, true);
-	}
-
-	// --- Edge-adjacent but NOT exits -> Empty ---
-	if ((y == -1 || y == gameboardSize) && (0 <= x && x < gameboardSize))
-		return Tile(TileType::Empty, Rotation::Zero, false);
-
-	if ((x == -1 || x == gameboardSize) && (0 <= y && y < gameboardSize))
-		return Tile(TileType::Empty, Rotation::Zero, false);
-
-	// --- Out of bounds and not an exit or adjacent to edge ---
-	assert(x >= 0 && x < gameboardSize);
-	assert(y >= 0 && y < gameboardSize);
-
-	return gameboard[y][x];
+	assert(x >= 0 && x < size);
+	assert(y >= 0 && y < size);
+	gameboard[y + 1][x + 1] = tile;
 }
+
+const Tile Gameboard::getTile(int x, int y) const
+{
+	assert(x >= 0 && x < size);
+	assert(y >= 0 && y < size);
+	return gameboard[y + 1][x + 1];
+}
+
+int Gameboard::getSize() const { return this->size; }
 
 bool Gameboard::isConnected(std::array<Move, 5> moves)
 {
 	LOG_DEBUG << "inside isConnected method\n";
 	// create 7x7 array
-	std::array<std::array<bool, gameboardSize>, gameboardSize> visited = {};
+	std::set<Tile> visited = {};
 
 
 	for (Move m : moves) {

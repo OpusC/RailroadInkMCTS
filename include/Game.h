@@ -1,5 +1,5 @@
+#pragma once
 #include "Gameboard.h"
-#include "Tiles.h"
 #include <array>
 #include <random>
 #include <vector>
@@ -8,7 +8,6 @@ class Game
 {
 
   public:
-	Game();
 	explicit Game(uint32_t seed);
 	Game(const Game &game);
 	Game(Game &&game);
@@ -18,15 +17,16 @@ class Game
 	 */
 	int getScore() const;
 	/*
-	 * Rolls the four dice to determine which dice must be used for the upcoming move
+	 * Rolls the four dice to determine which dice must be used for the upcoming
+	 * move
 	 */
 	const std::array<TileType, 4> rollDice();
 	Gameboard getGameboard() const;
 
 	/*
 	 * Param: the result of a rollDice call
-	 * Outputs a vector containing all of the possible moves with the inputted dice roll,
-	 * including possible uses of the special tile
+	 * Outputs a vector containing all of the possible moves with the inputted
+	 * dice roll, including possible uses of the special tile
 	 */
 	std::vector<Move> generateValidMoves(std::array<TileType, 4>);
 	bool validateMove(const std::array<Move, 5> &moves);

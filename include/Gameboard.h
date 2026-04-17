@@ -1,3 +1,5 @@
+#pragma once
+#include "BoardExit.h"
 #include "Move.h"
 #include "Tiles.h"
 #include <array>
@@ -6,19 +8,22 @@
 class Gameboard
 {
   public:
-	explicit Gameboard(int size);
+	explicit Gameboard(int size, std::vector<BoardExit>);
 
+	const Tile getTile(int x, int y) const;
 	const std::vector<std::vector<Tile>> &getGameboard() const
 	{
 		return gameboard;
 	}
-	Tile getTile(int x, int y) const;
-	bool validateMoves(const std::array<Move, 5> &moves);
-	bool isConnected(std::array<Move, 5>);
-	void applyMoves(const std::array<Move, 5> &moves);
+	int getSize() const;
+
+	bool isTilePlacementValid(int x, int y, const Tile &tile) const;
+
+	void applyTurn(const Turn &turn);
+	void removeTile(int x, int y);
+
 
   private:
-	bool tilesConnect(Tile t1, Tile t2, int direction) const;
-	void unapplyMoves(const std::array<Move, 5> &moves);
+	int size;
 	std::vector<std::vector<Tile>> gameboard;
 };

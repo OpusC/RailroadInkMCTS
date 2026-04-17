@@ -1,4 +1,6 @@
+#pragma once
 #include "Tiles.h"
+#include <vector>
 
 struct Move
 {
@@ -6,3 +8,5 @@ struct Move
 	int x;
 	int y;
 };
+
+using Turn = std::vector<Move>;

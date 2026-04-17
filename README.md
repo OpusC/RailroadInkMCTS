@@ -45,6 +45,16 @@ struct ValidPlacement {
 - On move placement, remove the used ValidPlacement from the list and add a new one for its
 outgoing edges, only if the outgoing edge faces to a None tileType as if it connects it will not be a ValidPlacement
 
+# Game class refactor
+- Replace `Game(uint32_t seed)` with `Game(int size, std::vector<BoardExit> exits)` and `Game(int size, std::vector<BoardExit> exits, uint32_t seed)` for optional reproducibility
+- Add UI api: `placeTile`, `undoLastPlacement`, `endTurn`
+- Add MCTS api: `generateValidTurns`, `applyTurn`
+- Add shared api: `getBoard`, `getAvailableTiles`, `getRound`, `isGameOver`, `calculateScore`
+- Maintain `std::vector<ValidPlacement>` privately, built from exits on construction and updated incrementally on every placement
+- Custom copy constructor: copies all state but re-seeds RNG from `std::random_device` so MCTS rollouts diverge
+- Add `Score.h` struct with `exitConnections`, `longestRoad`, `longestRail`, `centerSquares`, `errors`, `total()`
+- `Turn` type alias (`using Turn = std::vector<Move>`) belongs in `Move.h`
+
 # Goals
 1. Complete game logic
 2. Implement MCTS

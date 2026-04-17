@@ -3,7 +3,6 @@
 #include <array>
 #include <cassert>
 
-// TODO: STUB
 void Tile::rotate() {}
 
 bool Tile::connects(const Tile &t1,
@@ -25,8 +24,6 @@ bool Tile::connects(const Tile &t1,
 
 Tile::Tile(TileType tileType)
 {
-	if (tileType == TileType::Border) { this. }
-
 	assert(tileType >= 0 && tileType < NumTiles);
 
 	struct TileData

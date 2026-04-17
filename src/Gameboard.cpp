@@ -1,13 +1,8 @@
 #include "Gameboard.h"
 #include "BoardExit.h"
-#include "Debug.h"
 #include "TileEnums.h"
 #include "Tiles.h"
-#include <array>
 #include <cassert>
-#include <set>
-#include <unordered_set>
-#include <utility>
 #include <vector>
 
 
@@ -59,13 +54,6 @@ Gameboard::Gameboard(int size, std::vector<BoardExit> exits)
 	}
 }
 
-void Gameboard::setTile(int x, int y, Tile tile)
-{
-	assert(x >= 0 && x < size);
-	assert(y >= 0 && y < size);
-	gameboard[y + 1][x + 1] = tile;
-}
-
 const Tile Gameboard::getTile(int x, int y) const
 {
 	assert(x >= 0 && x < size);
@@ -74,74 +62,3 @@ const Tile Gameboard::getTile(int x, int y) const
 }
 
 int Gameboard::getSize() const { return this->size; }
-
-bool Gameboard::isConnected(std::array<Move, 5> moves)
-{
-	LOG_DEBUG << "inside isConnected method\n";
-	// create 7x7 array
-	std::set<Tile> visited = {};
-
-
-	for (Move m : moves) {
-		if (m.tile.getTileType() == TileType::Empty) { continue; }
-		LOG_DEBUG << "\n[DFS] starting dfs for move at x=" << m.x
-		          << " y=" << m.y << "\n";
-		if (visited[m.y][m.x]) { continue; }
-
-		bool tileTouchesExit = false;
-		dfs(m.x, m.y, tileTouchesExit, visited);
-
-		if (!tileTouchesExit) {
-			LOG_DEBUG
-			  << "move is false because a tile does not touch the exit\n";
-			return false;
-		}
-	}
-
-	return true;
-}
-
-bool Gameboard::validateMoves(const std::array<Move, 5> &moves)
-{
-	std::unordered_set<long long> seen;
-
-	for (Move m : moves) {
-		if (m.tile.getTileType() == TileType::Empty) { continue; }
-		long long key = (static_cast<long long>(m.x) << 32) | (unsigned int)m.y;
-		if (!seen.insert(key).second) {
-			LOG_DEBUG << "Duplicate move\n";
-			return false;
-		}
-
-
-		assert(m.x >= 0 && m.x < gameboardSize);
-		assert(m.y >= 0 && m.y < gameboardSize);
-
-		if (gameboard[m.y][m.x].getTileType() != TileType::Empty) {
-			LOG_DEBUG << "Attempted to place tile on non-empty tile\n";
-			return false;
-		}
-	}
-
-	applyMoves(moves);
-	bool valid = isConnected(moves);
-	unapplyMoves(moves);
-
-	return valid;
-}
-
-void Gameboard::applyMoves(const std::array<Move, 5> &moves)
-{
-	for (int i = 0; i < 5; i++) {
-		if (moves[i].tile.getTileType() == TileType::Empty) { continue; }
-		gameboard[moves[i].y][moves[i].x] = moves[i].tile;
-	}
-}
-
-void Gameboard::unapplyMoves(const std::array<Move, 5> &moves)
-{
-	for (int i = 0; i < 5; i++) {
-		if (moves[i].tile.getTileType() == TileType::Empty) { continue; }
-		gameboard[moves[i].y][moves[i].x] = Tile();
-	}
-}

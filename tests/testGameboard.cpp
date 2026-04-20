@@ -97,10 +97,10 @@ TEST(GameboardTest, FailWhenNoTilesTouchExit)
 	const Tile &t3 = Tile(TileType::StraightRail, Rotation::Zero);
 	const Tile &t4 = Tile(TileType::StraightRail, Rotation::Zero);
 
-	Move m1{ t1, 0, 0 };
-	Move m2{ t2, 0, 2 };
-	Move m3{ t3, 4, 0 };
-	Move m4{ t4, 4, 2 };
+	Move m1{ t1, 1, 0 };
+	Move m2{ t2, 1, 2 };
+	Move m3{ t3, 4, 1 };
+	Move m4{ t4, 4, 3 };
 
 
 	ASSERT_EQ(false, g.isMoveValid(m1));

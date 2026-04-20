@@ -105,32 +105,3 @@ TEST(TileTest, GetTileType)
 	Tile t = Tile(TileType::CurvedRail, Rotation::TwoSeventy);
 	EXPECT_EQ(TileType::CurvedRail, t.getTileType());
 }
-
-TEST(TileTest, DefaultConstructorNotConnectedToExit)
-{
-	Tile t = Tile();
-	EXPECT_EQ(false, t.isConnectedToExit);
-}
-
-TEST(TileTest, TileTypeConstructorNotConnectedToExit)
-{
-	Tile t = Tile(TileType::CurvedRail);
-	EXPECT_EQ(false, t.isConnectedToExit);
-}
-
-
-TEST(TileTest, TileTypeAndRotationConstructorNotConnectedToExit)
-{
-	Tile t = Tile(TileType::CurvedRail, Rotation::TwoSeventy);
-	EXPECT_EQ(false, t.isConnectedToExit);
-}
-
-TEST(TileTest, AllParamConstructorSetsIsConnectedToExit)
-{
-
-	Tile t0 = Tile(TileType::CurvedRail, Rotation::TwoSeventy, false);
-	EXPECT_EQ(false, t0.isConnectedToExit);
-
-	Tile t1 = Tile(TileType::CurvedRail, Rotation::TwoSeventy, true);
-	EXPECT_EQ(true, t1.isConnectedToExit);
-}

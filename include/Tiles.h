@@ -19,7 +19,6 @@ class Tile
 	Tile() = default;
 	Tile(TileType tileType);
 	Tile(TileType tileType, Rotation rotation);
-	Tile(TileType tileType, Rotation rotation, bool isConnectedToExit);
 
 	/*
 	 * Checks if the tile, when placed beside eachother, will connect.

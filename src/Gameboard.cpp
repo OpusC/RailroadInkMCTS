@@ -1,7 +1,9 @@
 #include "Gameboard.h"
 #include "BoardExit.h"
+#include "Debug.h"
 #include "TileEnums.h"
 #include "Tiles.h"
+#include <array>
 #include <cassert>
 #include <vector>
 
@@ -26,8 +28,8 @@ Gameboard::Gameboard(int size, std::vector<BoardExit> exits)
 		}
 	}
 
-	for (int i = 0; i < exits.size(); i++) {
-		for (int j = i + 1; j < exits.size(); j++) {
+	for (std::size_t i = 0; i < exits.size(); i++) {
+		for (std::size_t j = i + 1; j < exits.size(); j++) {
 			assert(exits[i].boardX != exits[j].boardX
 			       || exits[i].boardY != exits[j].boardY);
 		}
@@ -50,14 +52,48 @@ Gameboard::Gameboard(int size, std::vector<BoardExit> exits)
 
 		if (exit.exitDirection % 2 != 0) { exitTile.rotate(); }
 
+		LOG_DEBUG << "Placing exit tile at x : " << x + 1 << " y: " << y + 1
+		          << "\n";
 		gameboard[y + 1][x + 1] = exitTile;
 	}
 }
 
+bool Gameboard::isMoveValid(const Move &move) const
+{
+	LOG_DEBUG << "isMoveValid for x: " << move.x << " y: " << move.y << '\n';
+	std::array<std::array<int, 2>, 4> directions = {
+		{ { 0, -1 }, { 1, 0 }, { 0, 1 }, { -1, 0 } }
+	};
+
+	bool connects = false;
+
+
+	for (std::size_t i = 0; i < directions.size(); i++) {
+		int x = move.x + directions[i][0];
+		int y = move.y + directions[i][1];
+
+		connects = connects
+		           || Tile::connects(
+		             move.tile, getTile(x, y), static_cast<Direction>(i));
+
+		LOG_DEBUG << "connects: " << connects << '\n';
+	}
+
+	return connects;
+}
+
+void Gameboard::removeTile(int x, int y)
+{
+	return;// TODO: STUB
+}
+
+void Gameboard::applyMove(const Move &move) { return; }// TODO: STUB
+
 const Tile Gameboard::getTile(int x, int y) const
 {
-	assert(x >= 0 && x < size);
-	assert(y >= 0 && y < size);
+	LOG_DEBUG << "getTile(x: " << x + 1 << ", y: " << y + 1 << "\n";
+	assert(x >= -1 && x <= size);
+	assert(y >= -1 && y <= size);
 	return gameboard[y + 1][x + 1];
 }
 

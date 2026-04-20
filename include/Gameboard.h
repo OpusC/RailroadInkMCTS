@@ -2,7 +2,6 @@
 #include "BoardExit.h"
 #include "Move.h"
 #include "Tiles.h"
-#include <array>
 #include <vector>
 
 class Gameboard
@@ -16,10 +15,8 @@ class Gameboard
 		return gameboard;
 	}
 	int getSize() const;
-
-	bool isTilePlacementValid(int x, int y, const Tile &tile) const;
-
-	void applyTurn(const Turn &turn);
+	bool isMoveValid(const Move &move) const;
+	void applyMove(const Move &move);
 	void removeTile(int x, int y);
 
 

@@ -3,22 +3,31 @@
 #include <array>
 #include <cassert>
 
-void Tile::rotate() {}
+void Tile::rotate()
+{
+	std::array<ConnectionType, NumDirections> connectionsCopy =
+	  this->connections;
+
+	this->connections[0] = connectionsCopy[3];
+	this->connections[1] = connectionsCopy[0];
+	this->connections[2] = connectionsCopy[1];
+	this->connections[3] = connectionsCopy[2];
+}
 
 bool Tile::connects(const Tile &t1,
   const Tile &t2,
   Direction connectionDirection)
 {
-	LOG_DEBUG << "in tileConnect\n";
+	LOG_DEBUG << "checking connection for direction" << connectionDirection
+	          << "\n";
 	assert(connectionDirection >= 0
 	       and connectionDirection < Direction::NumDirections);
-
-	LOG_DEBUG << "in tileConnect\n";
 
 	auto c1 = t1.getConnections()[connectionDirection];
 	auto c2 =
 	  t2.getConnections()[(connectionDirection + 2) % Direction::NumDirections];
 
+	LOG_DEBUG << "c1: " << c1 << " c2: " << c2 << "\n";
 	return (c1 == c2) && (c1 != ConnectionType::None);
 }
 
@@ -56,22 +65,15 @@ Tile::Tile(TileType tileType)
 	this->tileType = tileType;
 	connections = tileData[tileType].connections;
 	isStation = tileData[tileType].isStation;
-	isConnectedToExit = false;
 }
 
 Tile::Tile(TileType tileType, Rotation rotation) : Tile(tileType)
 {
 	assert(rotation >= Zero && rotation <= TwoSeventy);
 
-	for (int i = 0; i <= static_cast<int>(rotation); i++) {
+	for (int i = 0; i < static_cast<int>(rotation); i++) {
 		rotate();
 	}
-}
-
-Tile::Tile(TileType tileType, Rotation rotation, bool isConnectedToExit)
-  : Tile(tileType, rotation)
-{
-	this->isConnectedToExit = isConnectedToExit;
 }
 
 bool Tile::operator==(const Tile &t) const

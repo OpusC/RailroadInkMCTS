@@ -64,7 +64,7 @@ TEST(TileTest, OneEightyRotationStraightRail)
 {
 	Tile t = Tile(TileType::StraightRail, Rotation::Ninety);
 	auto expected = std::array<CT, DIR::NumDirections>{
-		CT::Rail, CT::None, CT::Rail, CT::None
+		CT::None, CT::Rail, CT::None, CT::Rail
 	};
 	EXPECT_EQ(expected, t.getConnections());
 }

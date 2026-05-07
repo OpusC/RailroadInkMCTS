@@ -138,6 +138,22 @@ TEST(GameboardTest, ApplyMoveUsesBoardState)
 	ASSERT_EQ(true, g.isMoveValid(m2));
 }
 
+TEST(GameboardTest, ApplyMoveUsesBoardState2)
+{
+	BoardExit exit1{ 0, 1, Direction::Left, ConnectionType::Rail };
+	std::vector<BoardExit> exits{ exit1 };
+
+	Gameboard g = Gameboard(5, exits);
+
+	Move m1{ Tile(TileType::StraightRail, Rotation::Ninety), 0, 1 };
+	ASSERT_EQ(true, g.isMoveValid(m1));
+	g.applyMove(m1);
+
+
+	Move m2{ Tile(TileType::StraightRail, Rotation::Ninety), 1, 1 };
+	ASSERT_EQ(true, g.isMoveValid(m2));
+}
+
 
 TEST(GameboardTest, MoveShouldFailWithIncorrectRotation)
 {
@@ -150,6 +166,20 @@ TEST(GameboardTest, MoveShouldFailWithIncorrectRotation)
 	Move m1{ Tile(TileType::StraightRail, Rotation::Ninety), 0, 0 };
 	ASSERT_EQ(false, g.isMoveValid(m1));
 }
+
+TEST(GameboardTest, ApplyMovePlacesTile)
+{
+	BoardExit exit1{ 0, 0, Direction::Up, ConnectionType::Rail };
+	std::vector<BoardExit> exits{ exit1 };
+
+	Gameboard g = Gameboard(5, exits);
+	auto t1 = Tile(TileType::StraightRail, Rotation::Zero);
+	Move m1{ t1, 0, 0 };
+	ASSERT_EQ(true, g.isMoveValid(m1));
+	g.applyMove(m1);
+
+	ASSERT_EQ(t1, g.getGameboard()[1][1]);
+};
 
 
 TEST(GameboardTest, MoveShouldNotBeAllowedOnSameTileAsAnotherMove)
@@ -189,20 +219,20 @@ TEST(GameboardTest, MoveShouldNotCreateDeadEnd)
 
 TEST(GameboardTest, ShouldConnectTwoTiles)
 {
-	BoardExit exit1{ 0, 1, Direction::Up, ConnectionType::Rail };
-	BoardExit exit2{ 1, 0, Direction::Up, ConnectionType::Rail };
-	std::vector<BoardExit> exits{ exit1, exit2 };
+	BoardExit exit{ 0, 1, Direction::Right, ConnectionType::Rail };
+	std::vector<BoardExit> exits{ exit };
 
 	Gameboard g = Gameboard(5, exits);
 
-	Move m1{ Tile(TileType::StraightRail, Rotation::Zero), 0, 1 };
+
+	Move m1{ Tile(TileType::StraightRail, Rotation::Ninety), 0, 1 };
 	ASSERT_EQ(true, g.isMoveValid(m1));
 	g.applyMove(m1);
 
-	Move m2{ Tile(TileType::StraightRail, Rotation::Ninety), 1, 0 };
+	Move m2{ Tile(TileType::StraightRail, Rotation::Ninety), 1, 1 };
 	ASSERT_EQ(true, g.isMoveValid(m2));
 	g.applyMove(m2);
 
-	Move m3{ Tile(TileType::CurvedRail, Rotation::TwoSeventy), 1, 1 };
+	Move m3{ Tile(TileType::CurvedRail, Rotation::OneEighty), 2, 1 };
 	ASSERT_EQ(true, g.isMoveValid(m3));
 };

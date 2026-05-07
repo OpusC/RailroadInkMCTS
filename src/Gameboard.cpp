@@ -49,6 +49,12 @@ Gameboard::Gameboard(int size, std::vector<BoardExit> exits)
 
 		Tile exitTile = Tile(exitTileType);
 
+		// Either x is on an edge and y is anything
+		// Or y is on an edge and x is anything
+		assert((exit.boardX == 0 || exit.boardX == size - 1)
+		       || (exit.boardY == 0 || exit.boardY == size - 1));
+
+		// TODO: assert that the exit faces into the board
 
 		if (exit.exitDirection % 2 != 0) { exitTile.rotate(); }
 
@@ -64,6 +70,11 @@ bool Gameboard::isMoveValid(const Move &move) const
 	std::array<std::array<int, 2>, 4> directions = {
 		{ { 0, -1 }, { 1, 0 }, { 0, 1 }, { -1, 0 } }
 	};
+
+	if (getTile(move.x, move.y).getTileType() != TileType::Empty) {
+		LOG_DEBUG << "attempting to place tile on non-empty cell" << '\n';
+		return false;
+	}
 
 	bool connects = false;
 
@@ -87,11 +98,20 @@ void Gameboard::removeTile(int x, int y)
 	return;// TODO: STUB
 }
 
-void Gameboard::applyMove(const Move &move) { return; }// TODO: STUB
+/*
+ * This method does not check if a move is valid. Use isMoveValid for that
+ * purpose
+ */
+void Gameboard::applyMove(const Move &move)
+{
+	LOG_DEBUG << "Placed tile at x " << move.x + 1 << " y " << move.y + 1
+	          << '\n';
+	gameboard[move.y + 1][move.x + 1] = move.tile;
+}
 
 const Tile Gameboard::getTile(int x, int y) const
 {
-	LOG_DEBUG << "getTile(x: " << x + 1 << ", y: " << y + 1 << "\n";
+	LOG_DEBUG << "getTile x: " << x + 1 << ", y: " << y + 1 << "\n";
 	assert(x >= -1 && x <= size);
 	assert(y >= -1 && y <= size);
 	return gameboard[y + 1][x + 1];

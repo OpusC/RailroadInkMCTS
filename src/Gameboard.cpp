@@ -37,8 +37,15 @@ Gameboard::Gameboard(int size, std::vector<BoardExit> exits)
 
 	for (BoardExit exit : exits) {
 		int directions[4][2] = { { 0, -1 }, { 1, 0 }, { 0, 1 }, { -1, 0 } };
-		auto x = exit.boardX + directions[exit.exitDirection][0];
-		auto y = exit.boardY + directions[exit.exitDirection][1];
+		// +1 at the end is required because board size is actually larger
+		// than the exposed interface because exits are on the board
+		// but not exposed publically
+		LOG_DEBUG << "Direction " << exit.exitDirection << " add "
+		          << directions[exit.exitDirection][0] << "to x" << '\n';
+		LOG_DEBUG << "Direction " << exit.exitDirection << " add "
+		          << directions[exit.exitDirection][1] << "to y" << '\n';
+		auto x = exit.boardX + directions[exit.exitDirection][0] + 1;
+		auto y = exit.boardY + directions[exit.exitDirection][1] + 1;
 
 		TileType exitTileType;
 		if (exit.connectionType == ConnectionType::Rail) {
@@ -51,16 +58,16 @@ Gameboard::Gameboard(int size, std::vector<BoardExit> exits)
 
 		// Either x is on an edge and y is anything
 		// Or y is on an edge and x is anything
-		assert((exit.boardX == 0 || exit.boardX == size - 1)
-		       || (exit.boardY == 0 || exit.boardY == size - 1));
+		LOG_DEBUG << "Placing exit tile at x : " << x << " y: " << y << "\n";
+		LOG_DEBUG << "Total size " << totalSize << '\n';
+		assert(
+		  (x == 0 || x == totalSize - 1) || (y == 0 || y == totalSize - 1));
 
 		// TODO: assert that the exit faces into the board
 
 		if (exit.exitDirection % 2 != 0) { exitTile.rotate(); }
 
-		LOG_DEBUG << "Placing exit tile at x : " << x + 1 << " y: " << y + 1
-		          << "\n";
-		gameboard[y + 1][x + 1] = exitTile;
+		gameboard[y][x] = exitTile;
 	}
 }
 

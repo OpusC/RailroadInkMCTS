@@ -3,6 +3,7 @@
 #include "TileEnums.h"
 #include "Tiles.h"
 #include <gtest/gtest.h>
+#include <iostream>
 #include <vector>
 
 TEST(GameboardTest, ExitInitializationShouldNotAllowDuplicateOriginCoordinates)
@@ -61,7 +62,7 @@ TEST(GameboardTest, ExitTileConnectionsAreValid)
 	BoardExit exit1{ 0, 0, Direction::Up, ConnectionType::Rail };
 	BoardExit exit2{ 0, 2, Direction::Left, ConnectionType::Road };
 	BoardExit exit3{ 4, 0, Direction::Up, ConnectionType::Road };
-	BoardExit exit4{ 4, 2, Direction::Left, ConnectionType::Rail };
+	BoardExit exit4{ 4, 2, Direction::Right, ConnectionType::Rail };
 	std::vector<BoardExit> exits{ exit1, exit2, exit3, exit4 };
 
 	Gameboard g = Gameboard(5, exits);
@@ -84,10 +85,11 @@ TEST(GameboardTest, ExitTileConnectionsAreValid)
 
 TEST(GameboardTest, FailWhenNoTilesTouchExit)
 {
+
 	BoardExit exit1{ 0, 0, Direction::Up, ConnectionType::Rail };
 	BoardExit exit2{ 0, 2, Direction::Left, ConnectionType::Road };
 	BoardExit exit3{ 4, 0, Direction::Up, ConnectionType::Road };
-	BoardExit exit4{ 4, 2, Direction::Left, ConnectionType::Rail };
+	BoardExit exit4{ 4, 2, Direction::Right, ConnectionType::Rail };
 	std::vector<BoardExit> exits{ exit1, exit2, exit3, exit4 };
 
 	Gameboard g = Gameboard(5, exits);
@@ -199,7 +201,7 @@ TEST(GameboardTest, MoveShouldNotBeAllowedOnSameTileAsAnotherMove)
 
 TEST(GameboardTest, MoveShouldNotCreateDeadEnd)
 {
-	BoardExit exit1{ 0, 1, Direction::Up, ConnectionType::Rail };
+	BoardExit exit1{ 0, 1, Direction::Left, ConnectionType::Rail };
 	BoardExit exit2{ 1, 0, Direction::Up, ConnectionType::Rail };
 	std::vector<BoardExit> exits{ exit1, exit2 };
 
@@ -219,7 +221,7 @@ TEST(GameboardTest, MoveShouldNotCreateDeadEnd)
 
 TEST(GameboardTest, ShouldConnectTwoTiles)
 {
-	BoardExit exit{ 0, 1, Direction::Right, ConnectionType::Rail };
+	BoardExit exit{ 0, 1, Direction::Left, ConnectionType::Rail };
 	std::vector<BoardExit> exits{ exit };
 
 	Gameboard g = Gameboard(5, exits);

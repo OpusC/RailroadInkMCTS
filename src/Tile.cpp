@@ -1,4 +1,5 @@
 #include "Debug.h"
+#include "TileEnums.h"
 #include "Tiles.h"
 #include <array>
 #include <cassert>
@@ -23,9 +24,18 @@ bool Tile::connects(const Tile &t1,
 	assert(connectionDirection >= 0
 	       and connectionDirection < Direction::NumDirections);
 
+	auto reverseConnectionDirection =
+	  (connectionDirection + 2) % Direction::NumDirections;
+
+
+	LOG_DEBUG << "reverseConnectionDirection" << reverseConnectionDirection
+	          << "\n";
+	assert(reverseConnectionDirection >= 0);
+	assert(reverseConnectionDirection < Direction::NumDirections);
+
 	auto c1 = t1.getConnections()[connectionDirection];
-	auto c2 =
-	  t2.getConnections()[(connectionDirection + 2) % Direction::NumDirections];
+	auto c2 = t2.getConnections()[reverseConnectionDirection];
+
 
 	LOG_DEBUG << "c1: " << c1 << " c2: " << c2 << "\n";
 	return (c1 == c2) && (c1 != ConnectionType::None);

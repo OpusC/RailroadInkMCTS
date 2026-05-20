@@ -207,16 +207,36 @@ TEST(GameboardTest, MoveShouldNotCreateDeadEnd)
 
 	Gameboard g = Gameboard(5, exits);
 
-	Move m1{ Tile(TileType::StraightRail, Rotation::Zero), 0, 1 };
+	Move m1{ Tile(TileType::StraightRail, Rotation::Ninety), 0, 1 };
 	ASSERT_EQ(true, g.isMoveValid(m1));
 	g.applyMove(m1);
 
-	Move m2{ Tile(TileType::StraightRail, Rotation::Ninety), 1, 0 };
+	Move m2{ Tile(TileType::StraightRail, Rotation::Zero), 1, 0 };
 	ASSERT_EQ(true, g.isMoveValid(m2));
 	g.applyMove(m2);
 
 	Move m3{ Tile(TileType::StraightRail, Rotation::Zero), 1, 1 };
 	ASSERT_EQ(false, g.isMoveValid(m3));
+};
+
+TEST(GameboardTest, MoveShouldBeAllowedAsItDoesNotCreateDeadEnd)
+{
+	BoardExit exit1{ 0, 1, Direction::Left, ConnectionType::Rail };
+	BoardExit exit2{ 1, 0, Direction::Up, ConnectionType::Rail };
+	std::vector<BoardExit> exits{ exit1, exit2 };
+
+	Gameboard g = Gameboard(5, exits);
+
+	Move m1{ Tile(TileType::StraightRail, Rotation::Ninety), 0, 1 };
+	ASSERT_EQ(true, g.isMoveValid(m1));
+	g.applyMove(m1);
+
+	Move m2{ Tile(TileType::StraightRail, Rotation::Zero), 1, 0 };
+	ASSERT_EQ(true, g.isMoveValid(m2));
+	g.applyMove(m2);
+
+	Move m3{ Tile(TileType::CurvedRail, Rotation::TwoSeventy), 1, 1 };
+	ASSERT_EQ(true, g.isMoveValid(m3));
 };
 
 TEST(GameboardTest, ShouldConnectTwoTiles)

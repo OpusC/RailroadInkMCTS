@@ -23,4 +23,5 @@ class Gameboard
   private:
 	int size;
 	std::vector<std::vector<Tile>> gameboard;
+	void printBoard() const;
 };

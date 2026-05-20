@@ -5,6 +5,7 @@
 #include "Tiles.h"
 #include <array>
 #include <cassert>
+#include <iostream>
 #include <vector>
 
 
@@ -74,6 +75,9 @@ Gameboard::Gameboard(int size, std::vector<BoardExit> exits)
 bool Gameboard::isMoveValid(const Move &move) const
 {
 	LOG_DEBUG << "isMoveValid for x: " << move.x << " y: " << move.y << '\n';
+	printBoard();
+
+	// UP, RIGHT, DOWN, LEFT
 	std::array<std::array<int, 2>, 4> directions = {
 		{ { 0, -1 }, { 1, 0 }, { 0, 1 }, { -1, 0 } }
 	};
@@ -83,21 +87,55 @@ bool Gameboard::isMoveValid(const Move &move) const
 		return false;
 	}
 
-	bool connects = false;
+	bool validTile = false;
 
 
 	for (std::size_t i = 0; i < directions.size(); i++) {
+
+		LOG_DEBUG << "i " << i << '\n';
+
+		auto reverseDirection = (i + 2) % (Direction::NumDirections);
+		LOG_DEBUG << "reverse direction " << reverseDirection << '\n';
+
 		int x = move.x + directions[i][0];
 		int y = move.y + directions[i][1];
 
-		connects = connects
-		           || Tile::connects(
-		             move.tile, getTile(x, y), static_cast<Direction>(i));
+		Tile connectingTile = getTile(x, y);
 
-		LOG_DEBUG << "connects: " << connects << '\n';
+
+		ConnectionType connectionType =
+		  connectingTile.getConnections()[reverseDirection];
+
+		if (connectionType == ConnectionType::None) {
+			LOG_DEBUG << "ConnectionType None" << '\n';
+			continue;
+		}
+
+		// Conditions
+		// If we create a dead end, we instantly fail
+		// If we have a valid connection, we mark as valid but continue
+		// to iterate to check for a dead end
+		// continue if ConnectionType is none so we don't early fail
+		// otherwise check for a connection
+
+
+		LOG_DEBUG << "connecting tile of type" << connectingTile.getTileType()
+		          << '\n';
+
+		// bool connects = validTile
+		//                 || Tile::connects(
+		//                   move.tile, connectingTile,
+		//                   static_cast<Direction>(i));
+
+		bool connects = Tile::connects(
+		  connectingTile, move.tile, static_cast<Direction>(reverseDirection));
+
+		if (connects) { validTile = true; }
+
+		LOG_DEBUG << "validTile: " << validTile << '\n';
 	}
 
-	return connects;
+	return validTile;
 }
 
 void Gameboard::removeTile(int x, int y)
@@ -118,10 +156,89 @@ void Gameboard::applyMove(const Move &move)
 
 const Tile Gameboard::getTile(int x, int y) const
 {
-	LOG_DEBUG << "getTile x: " << x + 1 << ", y: " << y + 1 << "\n";
+	// LOG_DEBUG << "getTile x: " << x + 1 << ", y: " << y + 1 << "\n";
 	assert(x >= -1 && x <= size);
 	assert(y >= -1 && y <= size);
 	return gameboard[y + 1][x + 1];
 }
 
 int Gameboard::getSize() const { return this->size; }
+
+static char renderTile(const Tile &tile)
+{
+	TileType tt = tile.getTileType();
+	if (tt == TileType::Empty) return '.';
+	if (tt == TileType::Border) return '#';
+	if (isSpecialTile(tt)) return 'S';
+
+	auto &c = tile.getConnections();
+	bool up = c[Up] != ConnectionType::None;
+	bool right = c[Right] != ConnectionType::None;
+	bool down = c[Down] != ConnectionType::None;
+	bool left = c[Left] != ConnectionType::None;
+
+	// Use rail symbols when any connection is rail; road otherwise
+	bool hasRail =
+	  c[Up] == ConnectionType::Rail || c[Right] == ConnectionType::Rail
+	  || c[Down] == ConnectionType::Rail || c[Left] == ConnectionType::Rail;
+
+	int count = up + right + down + left;
+
+	switch (count) {
+	case 4:
+		return '*';
+	case 3:
+		return hasRail ? 't' : 'T';
+	case 2:
+		if (up && down) return hasRail ? '|' : 'I';
+		if (left && right) return hasRail ? '-' : '=';
+		if (up && right) return hasRail ? 'l' : 'L';
+		if (up && left) return hasRail ? 'j' : 'J';
+		if (down && right) return hasRail ? 'f' : 'F';
+		if (down && left) return hasRail ? 'z' : 'Z';
+		break;
+	case 1:
+		return hasRail ? 'r' : 'R';// border exit stubs
+	default:
+		break;
+	}
+	return '?';
+}
+
+/*
+ * printBoard renders the gameboard as ASCII characters, one char per tile.
+ *
+ * Fixed tiles:
+ *   '.'  Empty cell
+ *   '#'  Border
+ *   'S'  Special tile
+ *   '?'  Unknown/error
+ *
+ * Connection tiles use lowercase for rail and uppercase for road.
+ * The shape of the character reflects the tile's orientation:
+ *
+ *   Straight:   '|' / 'I'  (vertical)     '-' / '='  (horizontal)
+ *   Curved:     'l' / 'L'  (up + right)   'j' / 'J'  (up + left)
+ *               'f' / 'F'  (down + right) 'z' / 'Z'  (down + left)
+ *   T-junction: 't' / 'T'
+ *   4-way:      '*'
+ *   Exit stub:  'r' / 'R'  (single connection on the border)
+ *
+ * Example output (4x4 board with a horizontal rail crossing the middle):
+ *   ######
+ *   #....#
+ *   #r--r#
+ *   #....#
+ *   #....#
+ *   ######
+ */
+void Gameboard::printBoard() const
+{
+	int totalSize = size + 2;
+	for (int row = 0; row < totalSize; row++) {
+		for (int col = 0; col < totalSize; col++) {
+			std::cout << renderTile(gameboard[row][col]);
+		}
+		std::cout << '\n';
+	}
+}

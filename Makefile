@@ -29,7 +29,7 @@ run: $(TARGET)
 	./$(TARGET)
 
 test: $(TEST_TARGET)
-	./$(TEST_TARGET)
+	./$(TEST_TARGET) $(ARGS)
 
 coverage: $(COVERAGE_TARGET)
 	mkdir -p $(COVERAGE_DIR)

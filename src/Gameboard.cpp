@@ -87,9 +87,7 @@ bool Gameboard::isMoveValid(const Move &move) const
 		return false;
 	}
 
-	bool validTile = false;
-
-
+	bool connects = false;
 	for (std::size_t i = 0; i < directions.size(); i++) {
 
 		LOG_DEBUG << "i " << i << '\n';
@@ -122,20 +120,16 @@ bool Gameboard::isMoveValid(const Move &move) const
 		LOG_DEBUG << "connecting tile of type" << connectingTile.getTileType()
 		          << '\n';
 
-		// bool connects = validTile
-		//                 || Tile::connects(
-		//                   move.tile, connectingTile,
-		//                   static_cast<Direction>(i));
 
-		bool connects = Tile::connects(
-		  connectingTile, move.tile, static_cast<Direction>(reverseDirection));
+		connects = connects
+		           || Tile::connects(connectingTile,
+		             move.tile,
+		             static_cast<Direction>(reverseDirection));
 
-		if (connects) { validTile = true; }
-
-		LOG_DEBUG << "validTile: " << validTile << '\n';
+		LOG_DEBUG << "validTile: " << connects << '\n';
 	}
 
-	return validTile;
+	return connects;
 }
 
 void Gameboard::removeTile(int x, int y)

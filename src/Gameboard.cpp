@@ -100,14 +100,10 @@ bool Gameboard::isMoveValid(const Move &move) const
 
 		Tile connectingTile = getTile(x, y);
 
+		connects = connects
+		           || Tile::connects(
+		             move.tile, connectingTile, static_cast<Direction>(i));
 
-		ConnectionType connectionType =
-		  connectingTile.getConnections()[reverseDirection];
-
-		if (connectionType == ConnectionType::None) {
-			LOG_DEBUG << "ConnectionType None" << '\n';
-			continue;
-		}
 
 		// Conditions
 		// If we create a dead end, we instantly fail
@@ -115,16 +111,18 @@ bool Gameboard::isMoveValid(const Move &move) const
 		// to iterate to check for a dead end
 		// continue if ConnectionType is none so we don't early fail
 		// otherwise check for a connection
+		ConnectionType connectionType =
+		  connectingTile.getConnections()[reverseDirection];
+		if (connectionType != ConnectionType::None) {
+			LOG_DEBUG << "Checking for dead end" << "\n";
 
+			bool connectingTileCheck = Tile::connects(connectingTile,
+			  move.tile,
+			  static_cast<Direction>(reverseDirection));
 
-		LOG_DEBUG << "connecting tile of type" << connectingTile.getTileType()
-		          << '\n';
+			if (connectingTileCheck == false) { return false; }
+		}
 
-
-		connects = connects
-		           || Tile::connects(connectingTile,
-		             move.tile,
-		             static_cast<Direction>(reverseDirection));
 
 		LOG_DEBUG << "validTile: " << connects << '\n';
 	}

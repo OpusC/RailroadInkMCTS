@@ -1,6 +1,7 @@
 #pragma once
 #include "BoardExit.h"
 #include "Move.h"
+#include "Score.h"
 #include "Tiles.h"
 #include <vector>
 
@@ -18,6 +19,7 @@ class Gameboard
 	bool isMoveValid(const Move &move) const;
 	void applyMove(const Move &move);
 	void removeTile(int x, int y);
+	Score calculateScore() const;
 
 
   private:

@@ -234,3 +234,13 @@ void Gameboard::printBoard() const
 		std::cout << '\n';
 	}
 }
+
+Score Gameboard::calculateScore() const
+{
+	// TODO: implement scoring
+	return Score{ .connectedExits = 0,
+		.longestRoad = 0,
+		.longestRail = 0,
+		.centreSquares = 0,
+		.deadEndPenalty = 0 };
+}

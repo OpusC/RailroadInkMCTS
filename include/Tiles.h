@@ -35,7 +35,4 @@ class Tile
 	}
 
 	bool operator==(const Tile &t) const;
-
-	bool isConnectedToExit{ false };
-	bool isStation{ false };
 };

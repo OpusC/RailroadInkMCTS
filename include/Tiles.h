@@ -14,6 +14,7 @@ class Tile
 		None,
 		None,
 		None };
+	bool isStation{ false };
 
   public:
 	Tile() = default;
@@ -35,4 +36,5 @@ class Tile
 	}
 
 	bool operator==(const Tile &t) const;
+	bool getIsStation() const { return isStation; }
 };

@@ -3,7 +3,6 @@
 #include "TileEnums.h"
 #include "Tiles.h"
 #include <gtest/gtest.h>
-#include <iostream>
 #include <vector>
 
 TEST(GameboardTest, ExitInitializationShouldNotAllowDuplicateOriginCoordinates)

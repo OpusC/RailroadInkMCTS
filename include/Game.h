@@ -4,38 +4,45 @@
 #include <random>
 #include <vector>
 
+struct SpecialTileUsage
+{
+	bool tileA;
+	bool tileB;
+	bool tileC;
+	bool tileD;
+	bool tileE;
+	bool tileF;
+};
+
+struct DiceRoll
+{
+	std::array<TileType, 4> tiles;
+};
+
+struct Turn
+{
+	DiceRoll diceRoll;
+	std::vector<Move> moves;
+	bool usedSpecialTile;
+};
+
 class Game
 {
 
   public:
-	explicit Game(uint32_t seed);
-	Game(const Game &game);
-	Game(Game &&game);
-	/*
-	 * Returns the score of the game as if the game finished and end
-	 * of game scoring is applied
-	 */
-	int getScore() const;
-	/*
-	 * Rolls the four dice to determine which dice must be used for the upcoming
-	 * move
-	 */
-	const std::array<TileType, 4> rollDice();
-	Gameboard getGameboard() const;
-
-	/*
-	 * Param: the result of a rollDice call
-	 * Outputs a vector containing all of the possible moves with the inputted
-	 * dice roll, including possible uses of the special tile
-	 */
-	std::vector<Move> generateValidMoves(std::array<TileType, 4>);
-	bool validateMove(const std::array<Move, 5> &moves);
-	void playMove(std::array<Move, 5>);
-	int getSpecialTilesUsed() const;
+	explicit Game(Gameboard gameboard, uint32_t seed);
+	uint32_t getSeed() const;
+	DiceRoll rollDice();
+	void applyTurn(const Turn &turn);
+	int getNumberOfSpecialTilesUsed() const;
+	int getTurnNumber() const;
+	std::vector<Turn> generateLegalTurns(const DiceRoll &roll) const;
+	bool isGameOver() const;
+	Score getScore() const;// TODO: calculateScore owned by gameboard
 
   private:
 	Gameboard gameboard;
 	int turn;
-	std::array<bool, 6> specialTileUsed;
-	std::mt19937 rng;
+	SpecialTileUsage specialTilesUsed;
+	const std::mt19937 rng;
 };

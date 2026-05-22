@@ -77,7 +77,7 @@ TEST(TileTest, NoRotationSpecial6)
 		CT::Road, CT::Rail, CT::Road, CT::Rail
 	};
 	EXPECT_EQ(expected, t.getConnections());
-	EXPECT_EQ(true, t.isStation);
+	EXPECT_EQ(true, t.getIsStation());
 }
 
 TEST(TileTest, NinetyRotationSpecial6)
@@ -87,7 +87,7 @@ TEST(TileTest, NinetyRotationSpecial6)
 		CT::Rail, CT::Road, CT::Rail, CT::Road
 	};
 	EXPECT_EQ(expected, t.getConnections());
-	EXPECT_EQ(true, t.isStation);
+	EXPECT_EQ(true, t.getIsStation());
 }
 
 TEST(TileTest, OneEightyRotationSpecial6)
@@ -97,7 +97,7 @@ TEST(TileTest, OneEightyRotationSpecial6)
 		CT::Road, CT::Rail, CT::Road, CT::Rail
 	};
 	EXPECT_EQ(expected, t.getConnections());
-	EXPECT_EQ(true, t.isStation);
+	EXPECT_EQ(true, t.getIsStation());
 }
 
 TEST(TileTest, GetTileType)

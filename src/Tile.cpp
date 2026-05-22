@@ -88,6 +88,6 @@ Tile::Tile(TileType tileType, Rotation rotation) : Tile(tileType)
 
 bool Tile::operator==(const Tile &t) const
 {
-	return (tileType == t.tileType) && (isStation == t.isStation)
+	return (tileType == t.tileType) && (isStation == t.getIsStation())
 	       && (connections == t.connections);
 };

@@ -1,6 +1,6 @@
 #pragma once
 #include "Gameboard.h"
-#include <array>
+#include "TileEnums.h"
 #include <random>
 #include <vector>
 
@@ -16,7 +16,10 @@ struct SpecialTileUsage
 
 struct DiceRoll
 {
-	std::array<TileType, 4> tiles;
+	TileType dice1;// Route Die 1
+	TileType dice2;// Route Die 2
+	TileType dice3;// Route Die 3
+	TileType dice4;// Other Die
 };
 
 struct Turn
@@ -30,12 +33,11 @@ class Game
 {
 
   public:
-	explicit Game(Gameboard gameboard, uint32_t seed);
-	uint32_t getSeed() const;
+	explicit Game(Gameboard gameboard, std::mt19937 rng);
 	DiceRoll rollDice();
 	void applyTurn(const Turn &turn);
 	int getNumberOfSpecialTilesUsed() const;
-	int getTurnNumber() const;
+	int getTurnNumber() const { return turn; }
 	std::vector<Turn> generateLegalTurns(const DiceRoll &roll) const;
 	bool isGameOver() const;
 	Score getScore() const;// TODO: calculateScore owned by gameboard
@@ -44,5 +46,5 @@ class Game
 	Gameboard gameboard;
 	int turn;
 	SpecialTileUsage specialTilesUsed;
-	const std::mt19937 rng;
+	std::mt19937 rng;
 };

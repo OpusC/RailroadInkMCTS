@@ -3,28 +3,19 @@
 #include <array>
 #include <random>
 
-// Each die is represented as its 6 faces (with repeats where the physical
-// die has duplicate faces).
-static const std::array<TileType, 6> routeDie = { StraightRail,
-	CurvedRail,
-	TRail,
-	StraightRoad,
-	CurvedRoad,
-	TRoad };
+static const std::array<TileType, 6> routeDie = { TileType::StraightRail,
+	TileType::CurvedRail,
+	TileType::TRail,
+	TileType::StraightRoad,
+	TileType::CurvedRoad,
+	TileType::TRoad };
 
-static const std::array<TileType, 6> junctionDie = { TRail,
-	TRail,
-	TRoad,
-	TRoad,
-	RoadToRail,
-	CurvedRoadToRail };
-
-static const std::array<TileType, 6> overpassDie = { RoadRailUnderpass,
-	TRail,
-	TRoad,
-	StraightRail,
-	StraightRoad,
-	CurvedRail };
+static const std::array<TileType, 6> specialDie = { TileType::RoadRailUnderpass,
+	TileType::RoadRailUnderpass,
+	TileType::RoadToRail,
+	TileType::RoadToRail,
+	TileType::CurvedRoadToRail,
+	TileType::CurvedRoadToRail };
 
 Game::Game(Gameboard gameboard, std::mt19937 rng)
   : gameboard(gameboard), rng(rng)
@@ -40,4 +31,17 @@ int Game::getNumberOfSpecialTilesUsed() const
 	// 	if (used) count++;
 	// }
 	return count;// TODO: Stub
+}
+
+DiceRoll Game::rollDice()
+{
+	std::uniform_int_distribution<int> d6(0, 5);
+	// Distribution and engine are separate - d6 defines the range, rng provides
+	// the bits
+	// Calling d6(rng) uses operator()
+	// This is called a function object
+	return { routeDie[d6(rng)],
+		routeDie[d6(rng)],
+		routeDie[d6(rng)],
+		specialDie[d6(rng)] };
 }

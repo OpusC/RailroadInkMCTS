@@ -3,9 +3,6 @@
 #include "TileEnums.h"
 #include <array>
 
-
-inline bool isSpecialTile(TileType t) { return t >= Special1 && t <= Special6; }
-
 class Tile
 {
   private:

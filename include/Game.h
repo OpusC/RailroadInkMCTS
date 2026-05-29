@@ -1,18 +1,12 @@
 #pragma once
 #include "Gameboard.h"
+#include "SpecialTileUsage.h"
 #include "TileEnums.h"
-#include <random>
+#include <optional>
 #include <vector>
 
-struct SpecialTileUsage
-{
-	bool tileA;
-	bool tileB;
-	bool tileC;
-	bool tileD;
-	bool tileE;
-	bool tileF;
-};
+using TurnMoves = std::array<std::optional<Move>, 5>;
+
 
 struct DiceRoll
 {
@@ -22,29 +16,19 @@ struct DiceRoll
 	TileType dice4;// Other Die
 };
 
-struct Turn
-{
-	DiceRoll diceRoll;
-	std::vector<Move> moves;
-	bool usedSpecialTile;
-};
-
 class Game
 {
 
   public:
-	explicit Game(Gameboard gameboard, std::mt19937 rng);
-	DiceRoll rollDice();
-	void applyTurn(const Turn &turn);
-	int getNumberOfSpecialTilesUsed() const;
-	int getTurnNumber() const { return turn; }
-	std::vector<Turn> generateLegalTurns(const DiceRoll &roll) const;
+	explicit Game(Gameboard gameboard);
+	void applyTurn(const TurnMoves &moves);
+	std::vector<TurnMoves> generateLegalTurns(const DiceRoll &roll) const;
 	bool isGameOver() const;
 	Score getScore() const;// TODO: calculateScore owned by gameboard
+	int getTurnNumber() const { return turn; }
 
   private:
 	Gameboard gameboard;
-	int turn;
+	int turn{ 0 };
 	SpecialTileUsage specialTilesUsed;
-	std::mt19937 rng;
 };

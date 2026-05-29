@@ -17,31 +17,6 @@ static const std::array<TileType, 6> specialDie = { TileType::RoadRailUnderpass,
 	TileType::CurvedRoadToRail,
 	TileType::CurvedRoadToRail };
 
-Game::Game(Gameboard gameboard, std::mt19937 rng)
-  : gameboard(gameboard), rng(rng)
-{
-	turn = 0;
-	specialTilesUsed = { false, false, false, false, false, false };
-}
-
-int Game::getNumberOfSpecialTilesUsed() const
-{
-	int count = 0;
-	// for (bool used : specialTileUsed) {
-	// 	if (used) count++;
-	// }
-	return count;// TODO: Stub
-}
-
-DiceRoll Game::rollDice()
-{
-	std::uniform_int_distribution<int> d6(0, 5);
-	// Distribution and engine are separate - d6 defines the range, rng provides
-	// the bits
-	// Calling d6(rng) uses operator()
-	// This is called a function object
-	return { routeDie[d6(rng)],
-		routeDie[d6(rng)],
-		routeDie[d6(rng)],
-		specialDie[d6(rng)] };
-}
+Game::Game(Gameboard gameboard)
+  : gameboard(gameboard), turn(0), specialTilesUsed{}
+{}

@@ -1,7 +1,6 @@
 #include "Game.h"
 #include "Gameboard.h"
 #include <array>
-#include <random>
 
 static const std::array<TileType, 6> routeDie = { TileType::StraightRail,
 	TileType::CurvedRail,
@@ -20,3 +19,6 @@ static const std::array<TileType, 6> specialDie = { TileType::RoadRailUnderpass,
 Game::Game(Gameboard gameboard)
   : gameboard(gameboard), turn(0), specialTilesUsed{}
 {}
+
+// TODO: complete this method
+void Game::applyTurn(const TurnMoves &moves) { this->turn += 1; };

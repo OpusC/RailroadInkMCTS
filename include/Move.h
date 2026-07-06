@@ -3,7 +3,7 @@
 
 struct Move
 {
-	const Tile &tile;
+	Tile tile;
 	int x;
 	int y;
 };

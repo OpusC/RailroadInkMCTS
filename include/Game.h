@@ -22,7 +22,7 @@ class Game
   public:
 	explicit Game(Gameboard gameboard);
 	void applyTurn(const TurnMoves &moves);
-	std::vector<TurnMoves> generateLegalTurns(const DiceRoll &roll) const;
+	std::optional<TurnMoves> pickLegalTurn(const DiceRoll &roll) const;
 	bool isGameOver() const;
 	Score getScore() const;// TODO: calculateScore owned by gameboard
 	int getTurnNumber() const { return turn; }

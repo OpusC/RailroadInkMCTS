@@ -1,171 +1,108 @@
+#include "BoardExit.h"
 #include "Game.h"
-#include "Tiles.h"
-#include <array>
+#include "Gameboard.h"
+#include "Move.h"
 #include <gtest/gtest.h>
-#include <set>
 
-// 4 moves each directly adjacent to a board exit, plus Special4 (all rails)
-// chained behind the rail exit at (3,0).
-static std::array<Move, 5> turn1WithSpecial4()
+// TODO: sanity test harness that plays a game
+// Game g(board, seed);
+//
+// while (!g.isGameOver()) {
+//     auto roll = g.rollDice();
+//     auto turns = g.generateLegalTurns(roll);
+//
+//     assert(!turns.empty());
+//
+//     g.applyTurn(turns[0]); // or random
+// }
+
+Gameboard createGameboard()
 {
-	return {
-		Move{ Tile(TileType::StraightRail, Rotation::Zero), 3, 0 },    // rail exit (3,-1)
-		Move{ Tile(TileType::StraightRoad, Rotation::Zero), 1, 0 },    // road exit (1,-1)
-		Move{ Tile(TileType::StraightRoad, Rotation::Zero), 5, 0 },    // road exit (5,-1)
-		Move{ Tile(TileType::StraightRail, Rotation::Ninety), 0, 1 },  // rail exit (-1,1)
-		Move{ Tile(TileType::Special4, Rotation::Zero), 3, 1 },        // all-rail, chains to (3,0)
-	};
+	Gameboard gameboard = Gameboard(7, std::vector<BoardExit>{});
+	return gameboard;
 }
 
-TEST(GameTest, rollDiceShouldReturnNonNullTileType)
+Game createGame()
 {
-	Game game = Game();
-	std::array<TileType, 4> diceRoll = game.rollDice();
+	std::vector<BoardExit> exits{
+		// Top edge (y=0)
+		BoardExit{ 1, 0, Direction::Up, ConnectionType::Rail },
+		BoardExit{ 3, 0, Direction::Up, ConnectionType::Road },
+		BoardExit{ 5, 0, Direction::Up, ConnectionType::Rail },
 
-	for (TileType t : diceRoll) {
-		ASSERT_GT(t, TileType::Empty);
-		ASSERT_LT(t, TileType::Special1);
-	}
+		// Right edge (x=6)
+		BoardExit{ 6, 1, Direction::Right, ConnectionType::Road },
+		BoardExit{ 6, 3, Direction::Right, ConnectionType::Rail },
+		BoardExit{ 6, 5, Direction::Right, ConnectionType::Road },
+
+		// Bottom edge (y=6)
+		BoardExit{ 1, 6, Direction::Down, ConnectionType::Rail },
+		BoardExit{ 3, 6, Direction::Down, ConnectionType::Road },
+		BoardExit{ 5, 6, Direction::Down, ConnectionType::Rail },
+
+		// Left edge (x=0)
+		BoardExit{ 0, 1, Direction::Left, ConnectionType::Road },
+		BoardExit{ 0, 3, Direction::Left, ConnectionType::Rail },
+		BoardExit{ 0, 5, Direction::Left, ConnectionType::Road },
+	};
+
+	Gameboard gameboard = Gameboard(7, exits);
+	Game game = Game(gameboard);
+	return game;
 }
 
-TEST(GameTest, rollDiceShouldReturnTwoRoutesOneJunctionOneOverpass)
+
+// TODO: tile enum method owns this
+bool isRouteFace(TileType t)
 {
-	// Use a fixed seed so the test is deterministic.
-	Game game = Game(42);
-
-	const std::set<TileType> routeDieFaces = {
-		StraightRail, CurvedRail, TRail, StraightRoad, CurvedRoad, TRoad
-	};
-	const std::set<TileType> junctionDieFaces = {
-		TRail, TRoad, RoadToRail, CurvedRoadToRail
-	};
-	const std::set<TileType> overpassDieFaces = {
-		RoadRailUnderpass, TRail, TRoad, StraightRail, StraightRoad, CurvedRail
-	};
-
-	// Run many rolls to check every result stays within the valid face sets.
-	for (int i = 0; i < 500; i++) {
-		auto roll = game.rollDice();
-		ASSERT_TRUE(routeDieFaces.count(roll[0]))   << "Die 0 (route) rolled an invalid face";
-		ASSERT_TRUE(routeDieFaces.count(roll[1]))   << "Die 1 (route) rolled an invalid face";
-		ASSERT_TRUE(junctionDieFaces.count(roll[2])) << "Die 2 (junction) rolled an invalid face";
-		ASSERT_TRUE(overpassDieFaces.count(roll[3])) << "Die 3 (overpass) rolled an invalid face";
-	}
+	return t == TileType::StraightRail || t == TileType::CurvedRail
+	       || t == TileType::TRail || t == TileType::StraightRoad
+	       || t == TileType::CurvedRoad || t == TileType::TRoad;
 }
 
-TEST(GameTest, rollDiceShouldUseAllFacesOfEachDie)
+// TODO: tile enum method owns this
+bool isSpecialFace(TileType t)
 {
-	Game game = Game(0);
-
-	const std::set<TileType> routeDieFaces = {
-		StraightRail, CurvedRail, TRail, StraightRoad, CurvedRoad, TRoad
-	};
-	const std::set<TileType> junctionDieFaces = {
-		TRail, TRoad, RoadToRail, CurvedRoadToRail
-	};
-	const std::set<TileType> overpassDieFaces = {
-		RoadRailUnderpass, TRail, TRoad, StraightRail, StraightRoad, CurvedRail
-	};
-
-	std::set<TileType> seenDie0, seenDie1, seenDie2, seenDie3;
-
-	// Roll enough times that seeing every face is near-certain.
-	// Probability of missing any single face after 1000 rolls: (5/6)^1000 ≈ 0.
-	for (int i = 0; i < 1000; i++) {
-		auto roll = game.rollDice();
-		seenDie0.insert(roll[0]);
-		seenDie1.insert(roll[1]);
-		seenDie2.insert(roll[2]);
-		seenDie3.insert(roll[3]);
-	}
-
-	EXPECT_EQ(seenDie0, routeDieFaces);
-	EXPECT_EQ(seenDie1, routeDieFaces);
-	EXPECT_EQ(seenDie2, junctionDieFaces);
-	EXPECT_EQ(seenDie3, overpassDieFaces);
+	return t == TileType::RoadRailUnderpass || t == TileType::RoadToRail
+	       || t == TileType::CurvedRoadToRail;
 }
 
-TEST(GameTest, ValidateMoveShouldAcceptValidSpecialTile)
+
+TEST(GameTest, ConstructorInitializesProperly)
 {
-	Game game;
-	EXPECT_TRUE(game.validateMove(turn1WithSpecial4()));
+	Game game = Game(createGameboard());
+
+	EXPECT_EQ(game.getTurnNumber(), 0);
 }
 
-TEST(GameTest, PlayMoveMarksSpecialTileAsUsed)
+TEST(GameTest, CanApplyTurn)
 {
-	Game game;
-	game.playMove(turn1WithSpecial4());
-	EXPECT_EQ(1, game.getSpecialTilesUsed());
+	Game game = createGame();
+	Tile straightRoad = Tile(TileType::StraightRoad);
+	TurnMoves moves = {
+		Move{ straightRoad, 1, 1 },// connects to top exit at x=1, y=0
+		Move{ straightRoad, 1, 5 },// connects to bottom exit at x=1, y=6
+		Move{ straightRoad, 5, 1 },// connects to top exit at x=5, y=0
+		Move{ straightRoad, 5, 5 },// connects to bottom exit at x=5, y=6
+		std::nullopt
+	};
+	ASSERT_NO_FATAL_FAILURE(game.applyTurn(moves));
 }
 
-TEST(GameTest, DoubleUseOfSameSpecialTileIsRejected)
+// TODO: write test
+TEST(GameTest, ApplyTurnIncrementsTurnCounter)
 {
-	Game game;
-	game.playMove(turn1WithSpecial4());
+	Game game = createGame();
 
-	std::array<Move, 5> turn2 = {
-		Move{ Tile(TileType::StraightRoad, Rotation::Ninety), 0, 3 },  // road exit (-1,3)
-		Move{ Tile(TileType::StraightRail, Rotation::Ninety), 0, 5 },  // rail exit (-1,5)
-		Move{ Tile(TileType::StraightRail, Rotation::Ninety), 6, 1 },  // rail exit (7,1)
-		Move{ Tile(TileType::StraightRoad, Rotation::Ninety), 6, 3 },  // road exit (7,3)
-		Move{ Tile(TileType::Special4, Rotation::Zero), 3, 2 },        // Special4 already used
+	Tile straightRoad = Tile(TileType::StraightRoad);
+	TurnMoves moves = {
+		Move{ straightRoad, 1, 1 },// connects to top exit at x=1, y=0
+		Move{ straightRoad, 1, 5 },// connects to bottom exit at x=1, y=6
+		Move{ straightRoad, 5, 1 },// connects to top exit at x=5, y=0
+		Move{ straightRoad, 5, 5 },// connects to bottom exit at x=5, y=6
+		std::nullopt
 	};
 
-	EXPECT_FALSE(game.validateMove(turn2));
-}
-
-TEST(GameTest, SpecialTileInRegularSlotIsRejected)
-{
-	Game game;
-	std::array<Move, 5> moves = {
-		Move{ Tile(TileType::Special1, Rotation::Zero), 3, 0 },   // special in slot 0
-		Move{ Tile(TileType::StraightRoad, Rotation::Zero), 1, 0 },
-		Move{ Tile(TileType::StraightRoad, Rotation::Zero), 5, 0 },
-		Move{ Tile(TileType::StraightRail, Rotation::Ninety), 0, 1 },
-		Move{},
-	};
-
-	EXPECT_FALSE(game.validateMove(moves));
-}
-
-TEST(GameTest, TotalSpecialTileCapIsEnforcedAfterThreeUses)
-{
-	Game game;
-
-	// Turn 1: Special4 (all rails) at (3,1), chains to rail exit via (3,0)
-	game.playMove(turn1WithSpecial4());
-
-	// Turn 2: Special3 (all roads) at (1,1), chains to road exit via (1,0)
-	game.playMove({
-		Move{ Tile(TileType::StraightRoad, Rotation::Ninety), 0, 3 },
-		Move{ Tile(TileType::StraightRail, Rotation::Ninety), 0, 5 },
-		Move{ Tile(TileType::StraightRail, Rotation::Ninety), 6, 1 },
-		Move{ Tile(TileType::StraightRoad, Rotation::Ninety), 6, 3 },
-		Move{ Tile(TileType::Special3, Rotation::Zero), 1, 1 },
-	});
-
-	// Turn 3: Special1 at (5,1), roads connect up to StraightRoad at (5,0) to exit
-	game.playMove({
-		Move{ Tile(TileType::StraightRail, Rotation::Ninety), 6, 5 },
-		Move{ Tile(TileType::StraightRoad, Rotation::Zero), 1, 6 },
-		Move{ Tile(TileType::StraightRail, Rotation::Zero), 3, 6 },
-		Move{ Tile(TileType::StraightRoad, Rotation::Zero), 5, 6 },
-		Move{ Tile(TileType::Special1, Rotation::Zero), 5, 1 },
-	});
-
-	EXPECT_EQ(3, game.getSpecialTilesUsed());
-
-	// Turn 4: these 4 regular moves are valid (connect via already-placed tiles)
-	std::array<Move, 5> turn4 = {
-		Move{ Tile(TileType::StraightRail, Rotation::Zero), 3, 2 },    // via Special4 at (3,1)
-		Move{ Tile(TileType::StraightRail, Rotation::Zero), 3, 3 },    // via (3,2) chain
-		Move{ Tile(TileType::StraightRoad, Rotation::Zero), 1, 2 },    // via Special3 at (1,1)
-		Move{ Tile(TileType::StraightRoad, Rotation::Ninety), 4, 1 },  // via Special1 at (5,1)
-		Move{},
-	};
-	EXPECT_TRUE(game.validateMove(turn4));
-
-	// Adding any special tile must be rejected — cap already reached
-	turn4[4] = Move{ Tile(TileType::Special5, Rotation::Zero), 1, 3 };
-	EXPECT_FALSE(game.validateMove(turn4));
+	game.applyTurn(moves);
+	ASSERT_EQ(game.getTurnNumber(), 1);
 }

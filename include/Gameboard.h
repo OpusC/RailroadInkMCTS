@@ -1,31 +1,29 @@
+#pragma once
+#include "BoardExit.h"
 #include "Move.h"
+#include "Score.h"
 #include "Tiles.h"
-#include <array>
-
-const int gameboardSize = 7;
+#include <vector>
 
 class Gameboard
 {
   public:
-	Gameboard();
+	explicit Gameboard(int size, std::vector<BoardExit>);
 
-	const std::array<std::array<Tile, gameboardSize>, gameboardSize> &getGameboard() const
+	const Tile getTile(int x, int y) const;
+	const std::vector<std::vector<Tile>> &getGameboard() const
 	{
 		return gameboard;
 	}
-	Tile getTile(int x, int y) const;
-	bool validateMoves(const std::array<Move, 5> &moves);
-	bool isConnected(std::array<Move, 5>);
-	void applyMoves(const std::array<Move, 5> &moves);
+	int getSize() const;
+	bool isMoveValid(const Move &move) const;
+	void applyMove(const Move &move);
+	void removeTile(int x, int y);
+	Score calculateScore() const;
+
 
   private:
-	bool tilesConnect(Tile t1, Tile t2, int direction) const;
-	void dfs(int x,
-	  int y,
-	  bool &tileTouchesExit,
-	  std::array<std::array<bool, gameboardSize>, gameboardSize> &visited);
-
-	void unapplyMoves(const std::array<Move, 5> &moves);
-	std::array<std::array<Tile, gameboardSize>, gameboardSize> gameboard;
-	bool touchesExit[gameboardSize][gameboardSize];
+	int size;
+	std::vector<std::vector<Tile>> gameboard;
+	void printBoard() const;
 };

@@ -20,7 +20,7 @@ $(TARGET): $(SRCS) $(MAIN) | $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
 $(TEST_TARGET): $(SRCS) $(TESTS) | $(BUILD_DIR)
-	$(CXX) $(CXXFLAGS) -DNDEBUG -O2 -o $@ $^ -lgtest -lgtest_main
+	$(CXX) $(CXXFLAGS) -O2 -o $@ $^ -lgtest -lgtest_main
 
 $(COVERAGE_TARGET): $(SRCS) $(TESTS) | $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) --coverage -o $@ $^ -lgtest -lgtest_main
@@ -29,7 +29,7 @@ run: $(TARGET)
 	./$(TARGET)
 
 test: $(TEST_TARGET)
-	./$(TEST_TARGET)
+	./$(TEST_TARGET) $(ARGS)
 
 coverage: $(COVERAGE_TARGET)
 	mkdir -p $(COVERAGE_DIR)

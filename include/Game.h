@@ -1,34 +1,61 @@
 #pragma once
+
 #include "Gameboard.h"
 #include "SpecialTileUsage.h"
 #include "TileEnums.h"
-#include <optional>
+#include <array>
+#include <variant>
 #include <vector>
-
-using TurnMoves = std::array<std::optional<Move>, 5>;
-
 
 struct DiceRoll
 {
-	TileType dice1;// Route Die 1
-	TileType dice2;// Route Die 2
-	TileType dice3;// Route Die 3
-	TileType dice4;// Other Die
+	TileType dice1;
+	TileType dice2;
+	TileType dice3;
+	TileType dice4;
+};
+
+struct EndTurn
+{
+};
+using Action = std::variant<Move, EndTurn, DiceRoll>;
+
+struct ChanceOutcome
+{
+	DiceRoll roll;
+	double probability;
 };
 
 class Game
 {
-
   public:
 	explicit Game(Gameboard gameboard);
-	void applyTurn(const TurnMoves &moves);
-	std::optional<TurnMoves> pickLegalTurn(const DiceRoll &roll) const;
-	bool isGameOver() const;
-	Score getScore() const;// TODO: calculateScore owned by gameboard
+
+	bool isChanceNode() const { return phase() == Phase::AwaitingRoll; }
+	// Stub until chance outcome generation is implemented.
+	std::vector<ChanceOutcome> chanceOutcomes() const;
+	// Decision actions only. Use chanceOutcomes() while awaiting a roll.
+	std::vector<Action> legalActions() const;
+	// Throws std::invalid_argument if the action is illegal in this state.
+	void applyAction(const Action &action);
+	bool isGameOver() const { return phase() == Phase::Terminal; }
+	Score getScore() const;
+	// Number of completed rounds.
 	int getTurnNumber() const { return turn; }
 
   private:
+	enum class Phase { AwaitingRoll, PlacingTiles, Terminal };
+	Phase phase() const;
+	void appendPlacements(TileType type, std::vector<Action> &actions) const;
+	bool canUseSpecial(TileType type) const;
+
 	Gameboard gameboard;
 	int turn{ 0 };
+	// True once the round's full four-die roll has been applied.
+	bool rollApplied{ false };
+	// Number of unspent dice showing each TileType.
+	std::array<int, NumTiles> remainingDice{};
 	SpecialTileUsage specialTilesUsed;
+	int specialTilesPlaced{ 0 };
+	bool specialPlacedThisRound{ false };
 };

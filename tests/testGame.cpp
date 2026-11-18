@@ -4,24 +4,6 @@
 #include "Move.h"
 #include <gtest/gtest.h>
 
-// TODO: sanity test harness that plays a game
-// Game g(board, seed);
-//
-// while (!g.isGameOver()) {
-//     auto roll = g.rollDice();
-//     auto turns = g.generateLegalTurns(roll);
-//
-//     assert(!turns.empty());
-//
-//     g.applyTurn(turns[0]); // or random
-// }
-
-Gameboard createGameboard()
-{
-	Gameboard gameboard = Gameboard(7, std::vector<BoardExit>{});
-	return gameboard;
-}
-
 Game createGame()
 {
 	std::vector<BoardExit> exits{
@@ -52,57 +34,47 @@ Game createGame()
 }
 
 
-// TODO: tile enum method owns this
-bool isRouteFace(TileType t)
+TEST(GameTest, ConstructorAwaitsRoll)
 {
-	return t == TileType::StraightRail || t == TileType::CurvedRail
-	       || t == TileType::TRail || t == TileType::StraightRoad
-	       || t == TileType::CurvedRoad || t == TileType::TRoad;
-}
-
-// TODO: tile enum method owns this
-bool isSpecialFace(TileType t)
-{
-	return t == TileType::RoadRailUnderpass || t == TileType::RoadToRail
-	       || t == TileType::CurvedRoadToRail;
-}
-
-
-TEST(GameTest, ConstructorInitializesProperly)
-{
-	Game game = Game(createGameboard());
+	Game game = createGame();
 
 	EXPECT_EQ(game.getTurnNumber(), 0);
+	EXPECT_EQ(game.phase(), Phase::AwaitingRoll);
+	EXPECT_TRUE(game.legalActions().empty());
+	EXPECT_FALSE(game.chanceOutcomes().empty());
 }
 
-TEST(GameTest, CanApplyTurn)
+TEST(GameTest, PlacementConsumesADieWithoutEndingTheRound)
 {
-	Game game = createGame();
-	Tile straightRoad = Tile(TileType::StraightRoad);
-	TurnMoves moves = {
-		Move{ straightRoad, 1, 1 },// connects to top exit at x=1, y=0
-		Move{ straightRoad, 1, 5 },// connects to bottom exit at x=1, y=6
-		Move{ straightRoad, 5, 1 },// connects to top exit at x=5, y=0
-		Move{ straightRoad, 5, 5 },// connects to bottom exit at x=5, y=6
-		std::nullopt
-	};
-	ASSERT_NO_FATAL_FAILURE(game.applyTurn(moves));
-}
+	Game game(
+	  Gameboard(1, { BoardExit{ 0, 0, Direction::Up, ConnectionType::Road } }));
+	game.applyAction(
+	  DiceRoll{ StraightRoad, StraightRoad, StraightRoad, RoadToRail });
+	EXPECT_THROW(game.applyAction(EndTurn{}), std::invalid_argument);
 
-// TODO: write test
-TEST(GameTest, ApplyTurnIncrementsTurnCounter)
-{
-	Game game = createGame();
+	const Move placement{ Tile(StraightRoad), 0, 0 };
+	const auto actions = game.legalActions();
+	int matchingPlacements = 0;
+	for (const auto &action : actions) {
+		const auto *move = std::get_if<Move>(&action);
+		if (move && move->tile == placement.tile && move->x == 0
+		    && move->y == 0) {
+			++matchingPlacements;
+		}
+	}
+	EXPECT_EQ(matchingPlacements, 1);
 
-	Tile straightRoad = Tile(TileType::StraightRoad);
-	TurnMoves moves = {
-		Move{ straightRoad, 1, 1 },// connects to top exit at x=1, y=0
-		Move{ straightRoad, 1, 5 },// connects to bottom exit at x=1, y=6
-		Move{ straightRoad, 5, 1 },// connects to top exit at x=5, y=0
-		Move{ straightRoad, 5, 5 },// connects to bottom exit at x=5, y=6
-		std::nullopt
-	};
+	Game simulation = game;
+	simulation.applyAction(placement);
+	EXPECT_EQ(simulation.getTurnNumber(), 0);
+	EXPECT_THROW(simulation.applyAction(placement), std::invalid_argument);
 
-	game.applyTurn(moves);
-	ASSERT_EQ(game.getTurnNumber(), 1);
+	const auto remainingActions = simulation.legalActions();
+	ASSERT_EQ(remainingActions.size(), 1);
+	EXPECT_TRUE(std::holds_alternative<EndTurn>(remainingActions[0]));
+	simulation.applyAction(EndTurn{});
+	EXPECT_EQ(simulation.getTurnNumber(), 1);
+	EXPECT_EQ(simulation.phase(), Phase::AwaitingRoll);
+	EXPECT_EQ(game.phase(), Phase::PlacingTiles);
+	EXPECT_NO_THROW(game.applyAction(placement));
 }

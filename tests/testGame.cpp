@@ -78,3 +78,30 @@ TEST(GameTest, PlacementConsumesADieWithoutEndingTheRound)
 	EXPECT_FALSE(game.isGameOver());
 	EXPECT_NO_THROW(game.applyAction(placement));
 }
+
+TEST(GameTest, CanPlaceSpecialAfterUsingAllFourDice)
+{
+	Game game = createGame();
+	game.applyAction(
+	  DiceRoll{ StraightRoad, StraightRoad, StraightRoad, RoadToRail });
+
+	const Tile road(StraightRoad);
+	ASSERT_NO_THROW(game.applyAction(Move{ road, 3, 0 }));
+	ASSERT_NO_THROW(game.applyAction(Move{ road, 3, 1 }));
+	ASSERT_NO_THROW(game.applyAction(Move{ road, 3, 2 }));
+	ASSERT_NO_THROW(game.applyAction(Move{ Tile(RoadToRail), 3, 3 }));
+
+	const Tile special(Special4);
+	bool canEndTurn = false;
+	bool canPlaceSpecial = false;
+	for (const auto &action : game.legalActions()) {
+		canEndTurn |= std::holds_alternative<EndTurn>(action);
+		const auto *move = std::get_if<Move>(&action);
+		canPlaceSpecial |=
+		  move && move->tile == special && move->x == 3 && move->y == 4;
+	}
+
+	EXPECT_TRUE(canEndTurn);
+	EXPECT_TRUE(canPlaceSpecial);
+	EXPECT_NO_THROW(game.applyAction(Move{ special, 3, 4 }));
+}

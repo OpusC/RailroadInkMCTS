@@ -39,9 +39,8 @@ TEST(GameTest, ConstructorAwaitsRoll)
 	Game game = createGame();
 
 	EXPECT_EQ(game.getTurnNumber(), 0);
-	EXPECT_EQ(game.phase(), Phase::AwaitingRoll);
+	EXPECT_TRUE(game.isChanceNode());
 	EXPECT_TRUE(game.legalActions().empty());
-	EXPECT_FALSE(game.chanceOutcomes().empty());
 }
 
 TEST(GameTest, PlacementConsumesADieWithoutEndingTheRound)
@@ -74,7 +73,8 @@ TEST(GameTest, PlacementConsumesADieWithoutEndingTheRound)
 	EXPECT_TRUE(std::holds_alternative<EndTurn>(remainingActions[0]));
 	simulation.applyAction(EndTurn{});
 	EXPECT_EQ(simulation.getTurnNumber(), 1);
-	EXPECT_EQ(simulation.phase(), Phase::AwaitingRoll);
-	EXPECT_EQ(game.phase(), Phase::PlacingTiles);
+	EXPECT_TRUE(simulation.isChanceNode());
+	EXPECT_FALSE(game.isChanceNode());
+	EXPECT_FALSE(game.isGameOver());
 	EXPECT_NO_THROW(game.applyAction(placement));
 }

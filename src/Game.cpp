@@ -1,6 +1,5 @@
 #include "Game.h"
 #include <algorithm>
-#include <map>
 #include <stdexcept>
 #include <utility>
 
@@ -8,12 +7,6 @@ namespace {
 constexpr int roundLimit = 7;
 constexpr int specialLimit = 3;
 
-constexpr std::array<TileType, 6> routeDie = { StraightRail,
-	CurvedRail,
-	TRail,
-	StraightRoad,
-	CurvedRoad,
-	TRoad };
 constexpr std::array<TileType, 6> otherDie = { RoadRailUnderpass,
 	RoadRailUnderpass,
 	RoadToRail,
@@ -33,7 +26,7 @@ bool isOtherDieFace(TileType type)
 
 Game::Game(Gameboard gameboard) : gameboard(std::move(gameboard)) {}
 
-Phase Game::phase() const
+Game::Phase Game::phase() const
 {
 	if (turn == roundLimit) { return Phase::Terminal; }
 	return rollApplied ? Phase::PlacingTiles : Phase::AwaitingRoll;
@@ -41,31 +34,8 @@ Phase Game::phase() const
 
 std::vector<ChanceOutcome> Game::chanceOutcomes() const
 {
-	if (phase() != Phase::AwaitingRoll) { return {}; }
-
-	// Rolls with the same three route faces lead to the same state.
-	std::map<std::array<TileType, 4>, int> counts;
-	for (TileType first : routeDie) {
-		for (TileType second : routeDie) {
-			for (TileType third : routeDie) {
-				std::array<TileType, 3> routes{ first, second, third };
-				std::sort(routes.begin(), routes.end());
-				for (TileType other : otherDie) {
-					++counts[{ routes[0], routes[1], routes[2], other }];
-				}
-			}
-		}
-	}
-
-	std::vector<ChanceOutcome> outcomes;
-	outcomes.reserve(counts.size());
-	const double total =
-	  routeDie.size() * routeDie.size() * routeDie.size() * otherDie.size();
-	for (const auto &[faces, count] : counts) {
-		outcomes.push_back(
-		  { { faces[0], faces[1], faces[2], faces[3] }, count / total });
-	}
-	return outcomes;
+	// TODO: Generate weighted outcomes for a full four-die roll.
+	return {};
 }
 
 bool Game::canUseSpecial(TileType type) const

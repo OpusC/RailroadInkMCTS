@@ -2,6 +2,7 @@
 
 #include "Gameboard.h"
 #include "SpecialTileUsage.h"
+#include "TileEnums.h"
 #include <array>
 #include <variant>
 #include <vector>
@@ -25,14 +26,13 @@ struct ChanceOutcome
 	double probability;
 };
 
-enum class Phase { AwaitingRoll, PlacingTiles, Terminal };
-
 class Game
 {
   public:
 	explicit Game(Gameboard gameboard);
 
-	Phase phase() const;
+	bool isChanceNode() const { return phase() == Phase::AwaitingRoll; }
+	// Stub until chance outcome generation is implemented.
 	std::vector<ChanceOutcome> chanceOutcomes() const;
 	// Decision actions only. Use chanceOutcomes() while awaiting a roll.
 	std::vector<Action> legalActions() const;
@@ -44,12 +44,16 @@ class Game
 	int getTurnNumber() const { return turn; }
 
   private:
+	enum class Phase { AwaitingRoll, PlacingTiles, Terminal };
+	Phase phase() const;
 	void appendPlacements(TileType type, std::vector<Action> &actions) const;
 	bool canUseSpecial(TileType type) const;
 
 	Gameboard gameboard;
 	int turn{ 0 };
+	// True once the round's full four-die roll has been applied.
 	bool rollApplied{ false };
+	// Number of unspent dice showing each TileType.
 	std::array<int, NumTiles> remainingDice{};
 	SpecialTileUsage specialTilesUsed;
 	int specialTilesPlaced{ 0 };
